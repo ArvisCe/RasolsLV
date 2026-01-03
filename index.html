@@ -1,136 +1,203 @@
 <!DOCTYPE html>
 <html lang="lv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rasols.lv</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rasols.lv – haotiska reklāmu siena</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+html, body { height: 100%; }
+body {
+    background: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
 
-        body {
-            background: #f9f9f9;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+header {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+}
 
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 700;
-        }
+.main-container {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    max-width: 1920px;
+    gap: 1rem;
+    height: calc(100vh - 70px);
+    position: relative;
+}
 
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 2rem;
-            text-align: center;
-        }
+/* Reklāmu kolonnas (3 kolonas katrā pusē) */
+.ads-column {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 50px; /* bāzes augstums */
+    gap: 0.3rem;
+    flex: 0 0 300px; /* platums fiksēts */
+    z-index: 1;
+}
 
-        main img {
-            max-width: 90%;
-            height: auto;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+/* Reklāmu kastītes */
+.ad-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    border-radius: 12px;
+    border: 2px dashed;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-align: center;
+    transition: transform 0.2s;
+}
+.ad-box:hover { transform: scale(1.05) rotate(-2deg); }
 
-        main p {
-            font-size: 1.25rem;
-            max-width: 600px;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
+/* Haotiskas krāsas */
+.ad1 { background: #ffe082; border-color:#ff9800; color:#ff6f00; }
+.ad2 { background: #ffccbc; border-color:#ff5722; color:#e64a19; }
+.ad3 { background: #b3e5fc; border-color:#03a9f4; color:#0288d1; }
+.ad4 { background: #c8e6c9; border-color:#4caf50; color:#2e7d32; }
 
-        .card {
-            background-color: #fff;
-            padding: 1.5rem;
-            max-width: 600px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            text-align: left;
-            transition: transform 0.2s;
-        }
+/* Haotiski izmēri ar grid span */
+.ad-small { grid-row: span 1; }
+.ad-medium { grid-row: span 2; }
+.ad-large { grid-row: span 3; }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+/* Satura kolonna */
+.content-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    position: relative;
+    z-index: 2;
+}
 
-        .card h2 {
-            margin-bottom: 0.5rem;
-            color: #4CAF50;
-        }
+.content-column img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
 
-        .card p {
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #555;
-        }
+.content-text {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    text-align: center;
+}
 
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 1rem;
-        }
+.card {
+    width: 100%;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
 
-        @media (max-width: 600px) {
-            header {
-                font-size: 1.5rem;
-                padding: 1rem;
-            }
+.card h2 { color: #4CAF50; margin-bottom: 0.5rem; }
+.card p { color: #555; font-size: 1rem; line-height: 1.5; }
 
-            main p {
-                font-size: 1rem;
-                padding: 0 1rem;
-            }
+footer {
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
 
-            .card {
-                padding: 1rem;
-            }
-
-            .card p {
-                font-size: 0.95rem;
-            }
-        }
-    </style>
+/* Responsīvs */
+@media (max-width: 1200px) {
+    .main-container { flex-direction: column; height: auto; }
+    .ads-column { grid-template-columns: repeat(3, 1fr); flex: none; margin-bottom: 1rem; }
+    .ad-box { grid-row: span 1 !important; }
+}
+</style>
 </head>
 <body>
-    <header>
-        Rasols.lv
-    </header>
-    <main>
-        <img src="rasols.jpg" alt="Rasols">
-        <p>
-            Šeit ir <strong>rasols</strong>, nevis rosols! 🌿  
-            Baudiet īsto garšu, kas saglabā tradicionālo Latvijas mājas garšu.
-        </p>
 
+<header>Rasols.lv</header>
+
+<div class="main-container">
+
+    <!-- Kreisā reklāmu siena -->
+    <div class="ads-column">
+        <div class="ad-box ad1 ad-small">Reklāma</div>
+        <div class="ad-box ad2 ad-large">Reklāma</div>
+        <div class="ad-box ad3 ad-medium">Reklāma</div>
+        <div class="ad-box ad4 ad-small">Reklāma</div>
+        <div class="ad-box ad1 ad-large">Reklāma</div>
+        <div class="ad-box ad2 ad-small">Reklāma</div>
+        <div class="ad-box ad3 ad-medium">Reklāma</div>
+        <div class="ad-box ad4 ad-large">Reklāma</div>
+        <div class="ad-box ad1 ad-small">Reklāma</div>
+        <div class="ad-box ad2 ad-medium">Reklāma</div>
+        <div class="ad-box ad3 ad-large">Reklāma</div>
+        <div class="ad-box ad4 ad-small">Reklāma</div>
+        <div class="ad-box ad1 ad-medium">Reklāma</div>
+        <div class="ad-box ad2 ad-large">Reklāma</div>
+        <div class="ad-box ad3 ad-small">Reklāma</div>
+        <div class="ad-box ad4 ad-medium">Reklāma</div>
+        <div class="ad-box ad1 ad-large">Reklāma</div>
+        <div class="ad-box ad2 ad-small">Reklāma</div>
+    </div>
+
+    <!-- Satura kolonna -->
+    <div class="content-column">
+        <img src="rasols.jpg" alt="Rasols">
+        <div class="content-text">
+            Šeit ir <strong>rasols</strong>, nevis rosols! 🌿<br>
+            Baudiet īsto garšu, kas saglabā tradicionālo Latvijas mājas garšu.
+        </div>
         <div class="card">
             <h2>Kāpēc tas ir Rasols?</h2>
             <p>
-                Daudzi to sauc par "rosols", bet pareizais nosaukums ir <strong>rasols</strong>.  
-                Nosaukums cēlies no tradicionālā sastāvdaļu sajaukuma un Latvijas kulinārās vēstures.  
+                Daudzi to sauc par "rosols", bet pareizais nosaukums ir <strong>rasols</strong>.<br>
+                Nosaukums cēlies no tradicionālā sastāvdaļu sajaukuma un Latvijas kulinārās vēstures.<br>
                 Tātad, ja vēlies īsto mājas garšu, atceries – tas ir <strong>rasols</strong>!
             </p>
         </div>
-    </main>
-    <footer>
-        &copy; 2026 Rasols.lv
-    </footer>
+    </div>
+
+    <!-- Labā reklāmu siena -->
+    <div class="ads-column">
+        <div class="ad-box ad2 ad-small">Reklāma</div>
+        <div class="ad-box ad4 ad-large">Reklāma</div>
+        <div class="ad-box ad1 ad-medium">Reklāma</div>
+        <div class="ad-box ad3 ad-small">Reklāma</div>
+        <div class="ad-box ad2 ad-large">Reklāma</div>
+        <div class="ad-box ad4 ad-medium">Reklāma</div>
+        <div class="ad-box ad1 ad-small">Reklāma</div>
+        <div class="ad-box ad3 ad-large">Reklāma</div>
+        <div class="ad-box ad2 ad-small">Reklāma</div>
+        <div class="ad-box ad4 ad-medium">Reklāma</div>
+        <div class="ad-box ad1 ad-large">Reklāma</div>
+        <div class="ad-box ad3 ad-small">Reklāma</div>
+        <div class="ad-box ad2 ad-medium">Reklāma</div>
+        <div class="ad-box ad4 ad-large">Reklāma</div>
+        <div class="ad-box ad1 ad-small">Reklāma</div>
+        <div class="ad-box ad3 ad-medium">Reklāma</div>
+        <div class="ad-box ad2 ad-large">Reklāma</div>
+        <div class="ad-box ad4 ad-small">Reklāma</div>
+    </div>
+
+</div>
+
+<footer>&copy; 2026 Rasols.lv</footer>
+
 </body>
 </html>
 
