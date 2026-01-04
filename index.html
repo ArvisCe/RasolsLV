@@ -3,203 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rasols.lv – haotiska reklāmu siena</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<title>Chaotic Ad Wall</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-html, body { height: 100%; }
-body {
-    background: #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-header {
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 700;
+.ad {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: bold;
+  border: 2px solid #fff;
+  color: #000;
+  box-shadow: 0 0 5px #fff;
+  transition: transform 0.3s;
 }
-
-.main-container {
-    display: flex;
-    width: 100%;
-    flex: 1;
-    max-width: 1920px;
-    gap: 1rem;
-    height: calc(100vh - 70px);
-    position: relative;
+.ad:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 20px #fff;
+  z-index: 100;
 }
-
-/* Reklāmu kolonnas (3 kolonas katrā pusē) */
-.ads-column {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 1fr; /* each row is flexible fraction of total height */
-    gap: 0.5rem;
-    flex: 0 0 20%; /* 20% of container width, scalable */
-    height: 100%;
-}
-
-
-/* Reklāmu kastītes */
-.ad-box {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-weight: bold;
-    border-radius: 12px;
-    border: 2px dashed;
-    text-align: center;
-    /* Scale with parent grid row */
-}
-
-.ad-box:hover { transform: scale(1.05) rotate(-2deg); }
-
-/* Haotiskas krāsas */
-.ad1 { background: #ffe082; border-color:#ff9800; color:#ff6f00; }
-.ad2 { background: #ffccbc; border-color:#ff5722; color:#e64a19; }
-.ad3 { background: #b3e5fc; border-color:#03a9f4; color:#0288d1; }
-.ad4 { background: #c8e6c9; border-color:#4caf50; color:#2e7d32; }
-
-/* Haotiski izmēri ar grid span */
-.ad-small { grid-row: span 1; }
-.ad-medium { grid-row: span 2; }
-.ad-large { grid-row: span 3; }
-
-
-/* Satura kolonna */
-.content-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-    position: relative;
-    z-index: 2;
-}
-
-.content-column img {
-    max-width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.content-text {
-    font-size: 1.25rem;
-    line-height: 1.6;
-    text-align: center;
-}
-
-.card {
-    width: 100%;
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
-
-.card h2 { color: #4CAF50; margin-bottom: 0.5rem; }
-.card p { color: #555; font-size: 1rem; line-height: 1.5; }
-
-footer {
-    width: 100%;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem;
-}
-
-/* Responsīvs */
-@media (max-width: 1200px) {
-    .main-container { flex-direction: column; height: auto; }
-    .ads-column { grid-auto-rows: calc(100% / 10); }
-    .ad-box { grid-row: span 1 !important; }
-}
+.ad div { line-height: 1.2; }
+.middle { z-index: 999; }
+a { text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
 </style>
 </head>
 <body>
+<script>
+const vw = window.innerWidth;
+const vh = window.innerHeight;
+const colors = ['#f28b82','#fbbc04','#34a853','#4285f4','#aa66cc','#ff7043','#00c851','#33b5e5','#ffbb33','#ff4444'];
 
-<header>Rasols.lv</header>
+const baseMiddleSize = Math.min(vw, vh) * 0.3;
+const middleSize = baseMiddleSize * 1.5;
+const bigSize = baseMiddleSize * 0.6;
+const mediumSize = baseMiddleSize * 0.4;
+const smallSize = baseMiddleSize * 0.25;
 
-<div class="main-container">
+const placedAds = [];
 
-    <!-- Kreisā reklāmu siena -->
-    <div class="ads-column">
-        <div class="ad-box ad1 ad-small">Reklāma</div>
-        <div class="ad-box ad2 ad-large">Reklāma</div>
-        <div class="ad-box ad3 ad-medium">Reklāma</div>
-        <div class="ad-box ad4 ad-small">Reklāma</div>
-        <div class="ad-box ad1 ad-large">Reklāma</div>
-        <div class="ad-box ad2 ad-small">Reklāma</div>
-        <div class="ad-box ad3 ad-medium">Reklāma</div>
-        <div class="ad-box ad4 ad-large">Reklāma</div>
-        <div class="ad-box ad1 ad-small">Reklāma</div>
-        <div class="ad-box ad2 ad-medium">Reklāma</div>
-        <div class="ad-box ad3 ad-large">Reklāma</div>
-        <div class="ad-box ad4 ad-small">Reklāma</div>
-        <div class="ad-box ad1 ad-medium">Reklāma</div>
-        <div class="ad-box ad2 ad-large">Reklāma</div>
-        <div class="ad-box ad3 ad-small">Reklāma</div>
-        <div class="ad-box ad4 ad-medium">Reklāma</div>
-        <div class="ad-box ad1 ad-large">Reklāma</div>
-        <div class="ad-box ad2 ad-small">Reklāma</div>
-    </div>
+// Create ad with deterministic index
+function createAd(size, price, x, y, type='', index=null) {
+  const div = document.createElement('div');
+  div.classList.add('ad');
+  if(type==='middle') div.classList.add('middle');
+  div.style.width = `${size}px`;
+  div.style.height = `${size}px`;
+  div.style.left = `${x - size/2}px`;
+  div.style.top = `${y - size/2}px`;
+  div.style.background = colors[Math.floor(Math.random()*colors.length)];
+  div.style.fontSize = `${Math.max(size*0.15, 12)}px`;
 
-    <!-- Satura kolonna -->
-    <div class="content-column">
-        <img src="rasols.jpg" alt="Rasols">
-        <div class="content-text">
-            Šeit ir <strong>rasols</strong>, nevis rosols! 🌿<br>
-            Baudiet īsto garšu, kas saglabā tradicionālo Latvijas mājas garšu.
-        </div>
-        <div class="card">
-            <h2>Kāpēc tas ir Rasols?</h2>
-            <p>
-                Daudzi to sauc par "rosols", bet pareizais nosaukums ir <strong>rasols</strong>.<br>
-                Nosaukums cēlies no tradicionālā sastāvdaļu sajaukuma un Latvijas kulinārās vēstures.<br>
-                Tātad, ja vēlies īsto mājas garšu, atceries – tas ir <strong>rasols</strong>!
-            </p>
-        </div>
-    </div>
+  if(index !== null) div.dataset.index = index;
 
-    <!-- Labā reklāmu siena -->
-    <div class="ads-column">
-        <div class="ad-box ad2 ad-small">Reklāma</div>
-        <div class="ad-box ad4 ad-large">Reklāma</div>
-        <div class="ad-box ad1 ad-medium">Reklāma</div>
-        <div class="ad-box ad3 ad-small">Reklāma</div>
-        <div class="ad-box ad2 ad-large">Reklāma</div>
-        <div class="ad-box ad4 ad-medium">Reklāma</div>
-        <div class="ad-box ad1 ad-small">Reklāma</div>
-        <div class="ad-box ad3 ad-large">Reklāma</div>
-        <div class="ad-box ad2 ad-small">Reklāma</div>
-        <div class="ad-box ad4 ad-medium">Reklāma</div>
-        <div class="ad-box ad1 ad-large">Reklāma</div>
-        <div class="ad-box ad3 ad-small">Reklāma</div>
-        <div class="ad-box ad2 ad-medium">Reklāma</div>
-        <div class="ad-box ad4 ad-large">Reklāma</div>
-        <div class="ad-box ad1 ad-small">Reklāma</div>
-        <div class="ad-box ad3 ad-medium">Reklāma</div>
-        <div class="ad-box ad2 ad-large">Reklāma</div>
-        <div class="ad-box ad4 ad-small">Reklāma</div>
-    </div>
+  div.innerHTML = `<div>Vieta reklāmai</div><div>${price}</div>`;
+  document.body.appendChild(div);
+  placedAds.push({x, y, size});
+  return div;
+}
 
-</div>
+// Check minimal overlap with existing ads (~5px allowed)
+function isValid(x, y, size) {
+  for(const ad of placedAds){
+    const dx = Math.abs(x - ad.x);
+    const dy = Math.abs(y - ad.y);
+    const minDist = (size + ad.size)/2 - 5;
+    if(dx < minDist && dy < minDist) return false;
+  }
+  return true;
+}
 
-<footer>&copy; 2026 Rasols.lv</footer>
+// Deterministic pseudo-random
+function pseudo(seed, max) {
+  const x = Math.sin(seed) * 10000;
+  return Math.abs(x - Math.floor(x)) * max;
+}
 
+// Middle ad
+const middleX = vw/2;
+const middleY = vh/2;
+createAd(middleSize, '10 €/mēnesī', middleX, middleY, 'middle', 0);
+
+// Generate ads
+function generateAds(count, size, price, seedStart) {
+  let adCount = 0;
+  let attemptOffset = 0;
+  while(adCount < count){
+    const seed = seedStart + adCount;
+    let x = pseudo(seed*7 + attemptOffset, vw - size) + size/2;
+    let y = pseudo(seed*13 + attemptOffset, vh - size) + size/2;
+
+    if(isValid(x, y, size)){
+      createAd(size, price, x, y, '', seedStart + adCount);
+      adCount++;
+      attemptOffset = 0;
+    } else {
+      attemptOffset++;
+      if(attemptOffset > 50) {
+        attemptOffset = 0;
+        adCount++;
+      }
+    }
+  }
+}
+
+// 15 big, 25 medium, 50 small
+generateAds(15, bigSize, '4 €/mēnesī', 1);
+generateAds(30, mediumSize, '2 €/mēnesī', 100);
+generateAds(60, smallSize, '1 €/mēnesī', 200);
+
+// Example: set a custom image, text, and link for a specific ad
+function setAdContent(index, imageUrl, text, link){
+  const ad = document.querySelector(`.ad[data-index="${index}"]`);
+  if(!ad) return;
+  ad.innerHTML = `
+    <a href="${link}" target="_blank">
+      <img src="${imageUrl}" style="width:90%;height:70%;object-fit:cover;border-radius:5px;">
+      <div style="margin-top:5px;font-weight:bold;">${text}</div>
+    </a>
+  `;
+}
+
+// setAdContent(0, 'https://via.placeholder.com/300', 'Middle Ad', 'https://example.com');
+
+</script>
 </body>
 </html>
 
