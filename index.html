@@ -8,9 +8,15 @@
 html, body {
   margin: 0;
   height: 100%;
-  overflow: hidden;
-  background: #111;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  background: #000; 
+}
+
+#ad-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 .ad {
   position: absolute;
@@ -36,21 +42,27 @@ a { text-decoration: none; color: inherit; display: flex; flex-direction: column
 </style>
 </head>
 <body>
+<div id="ad-container"></div>
 <script>
-const vw = window.innerWidth;
-const vh = window.innerHeight;
+const container = document.getElementById('ad-container');
 const colors = ['#f28b82','#fbbc04','#34a853','#4285f4','#aa66cc','#ff7043','#00c851','#33b5e5','#ffbb33','#ff4444'];
+let placedAds = [];
 
-const baseMiddleSize = Math.min(vw, vh) * 0.3;
-const middleSize = baseMiddleSize * 1.5;
-const bigSize = baseMiddleSize * 0.6;
-const mediumSize = baseMiddleSize * 0.4;
-const smallSize = baseMiddleSize * 0.25;
+// Sizes
+function getSizes() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  return {
+    baseMiddle: Math.min(vw, vh) * 0.3,
+    middle: Math.min(vw, vh) * 0.3 * 1.5,
+    big: Math.min(vw, vh) * 0.3 * 0.6,
+    medium: Math.min(vw, vh) * 0.3 * 0.4,
+    small: Math.min(vw, vh) * 0.3 * 0.25
+  }
+}
 
-const placedAds = [];
-
-// Create ad with deterministic index
-function createAd(size, price, x, y, type='', index=null) {
+// Create ad
+function createAd(size, price, x, y, index=null, type='') {
   const div = document.createElement('div');
   div.classList.add('ad');
   if(type==='middle') div.classList.add('middle');
@@ -59,80 +71,91 @@ function createAd(size, price, x, y, type='', index=null) {
   div.style.left = `${x - size/2}px`;
   div.style.top = `${y - size/2}px`;
   div.style.background = colors[Math.floor(Math.random()*colors.length)];
-  div.style.fontSize = `${Math.max(size*0.15, 12)}px`;
-
-  if(index !== null) div.dataset.index = index;
-
+  div.style.fontSize = `${Math.max(size*0.15,12)}px`;
+  if(index!==null) div.dataset.index = index;
   div.innerHTML = `<div>Vieta reklāmai</div><div>${price}</div>`;
-  document.body.appendChild(div);
-  placedAds.push({x, y, size});
+  container.appendChild(div);
+  placedAds.push({x,y,size});
   return div;
 }
 
-// Check minimal overlap with existing ads (~5px allowed)
-function isValid(x, y, size) {
+// Minimal overlap
+function isValid(x,y,size){
   for(const ad of placedAds){
     const dx = Math.abs(x - ad.x);
     const dy = Math.abs(y - ad.y);
-    const minDist = (size + ad.size)/2 - 5;
+    const minDist = (size+ad.size)/2 - 5;
     if(dx < minDist && dy < minDist) return false;
   }
   return true;
 }
 
-// Deterministic pseudo-random
-function pseudo(seed, max) {
-  const x = Math.sin(seed) * 10000;
-  return Math.abs(x - Math.floor(x)) * max;
-}
+// Pseudo random
+function pseudo(seed,max){ return Math.abs(Math.sin(seed)*10000%1)*max; }
 
-// Middle ad
-const middleX = vw/2;
-const middleY = vh/2;
-createAd(middleSize, '10 €/mēnesī', middleX, middleY, 'middle', 0);
+// Clear container and ads
+function clearAds(){ container.innerHTML=''; placedAds=[]; }
 
-// Generate ads
-function generateAds(count, size, price, seedStart) {
-  let adCount = 0;
-  let attemptOffset = 0;
-  while(adCount < count){
-    const seed = seedStart + adCount;
-    let x = pseudo(seed*7 + attemptOffset, vw - size) + size/2;
-    let y = pseudo(seed*13 + attemptOffset, vh - size) + size/2;
-
-    if(isValid(x, y, size)){
-      createAd(size, price, x, y, '', seedStart + adCount);
-      adCount++;
-      attemptOffset = 0;
-    } else {
-      attemptOffset++;
-      if(attemptOffset > 50) {
-        attemptOffset = 0;
-        adCount++;
+// Generate deterministic layout
+function generateAds(count,size,price,seedStart, vw, vh, avoidMiddle=false){
+  let adCount=0; let attemptOffset=0;
+  const middleX=vw/2; const middleY=vh/2;
+  while(adCount<count){
+    const seed=seedStart+adCount;
+    let x=pseudo(seed*7+attemptOffset,vw-size)+size/2;
+    let y=pseudo(seed*13+attemptOffset,vh-size)+size/2;
+    if(avoidMiddle){
+      const safe=(getSizes().middle)/2 + size/2 +5;
+      if(Math.abs(x-middleX)<safe && Math.abs(y-middleY)<safe){
+        if(x<middleX)x-=safe/2; else x+=safe/2;
+        if(y<middleY)y-=safe/2; else y+=safe/2;
       }
     }
+    if(isValid(x,y,size)){
+      createAd(size,price,x,y,seedStart+adCount);
+      adCount++; attemptOffset=0;
+    } else { attemptOffset++; if(attemptOffset>50){ attemptOffset=0; adCount++; } }
   }
 }
 
-// 15 big, 25 medium, 50 small
-generateAds(15, bigSize, '4 €/mēnesī', 1);
-generateAds(30, mediumSize, '2 €/mēnesī', 100);
-generateAds(60, smallSize, '1 €/mēnesī', 200);
-
-// Example: set a custom image, text, and link for a specific ad
-function setAdContent(index, imageUrl, text, link){
-  const ad = document.querySelector(`.ad[data-index="${index}"]`);
+// Set custom ad content
+function setAdContent(index,imageUrl,text,link){
+  const ad=document.querySelector(`.ad[data-index="${index}"]`);
   if(!ad) return;
-  ad.innerHTML = `
-    <a href="${link}" target="_blank">
-      <img src="${imageUrl}" style="width:90%;height:70%;object-fit:cover;border-radius:5px;">
-      <div style="margin-top:5px;font-weight:bold;">${text}</div>
-    </a>
-  `;
+  ad.innerHTML=`<a href="${link}" target="_blank">
+    <img src="${imageUrl}" style="width:90%;height:70%;object-fit:cover;border-radius:5px;">
+    <div style="margin-top:5px;font-weight:bold;">${text}</div>
+  </a>`;
 }
 
-// setAdContent(0, 'https://via.placeholder.com/300', 'Middle Ad', 'https://example.com');
+// Generate layouts based on screen
+function generateLayout(){
+  clearAds();
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const sizes=getSizes();
+  if(vh>vw){ // Mobile layout
+    // Middle at top-ish for scrolling
+    const middleX=vw/2, middleY=sizes.middle/2 + 20;
+    createAd(sizes.middle,'20 €/mēnesī',middleX,middleY,'middle',0);
+    generateAds(15,sizes.big,'4 €/mēnesī',1,vw,vh,true);
+    generateAds(25,sizes.medium,'2 €/mēnesī',100,vw,vh,true);
+    generateAds(50,sizes.small,'1 €/mēnesī',200,vw,vh,true);
+  } else { // Desktop layout
+    const middleX=vw/2, middleY=vh/2;
+    createAd(sizes.middle,'20 €/mēnesī',middleX,middleY,'middle',0);
+    generateAds(15,sizes.big,'4 €/mēnesī',1,vw,vh,true);
+    generateAds(25,sizes.medium,'2 €/mēnesī',100,vw,vh,true);
+    generateAds(50,sizes.small,'1 €/mēnesī',200,vw,vh,true);
+  }
+}
 
+// Initial layout
+generateLayout();
+setAdContent(5,'https://via.placeholder.com/150','Custom Ad Text','https://example.com');
+setAdContent(0,'https://via.placeholder.com/300','Middle Ad','https://example.com');
+
+// Regenerate layout on resize
+window.addEventListener('resize',generateLayout);
 </script>
 </body>
 </html>
