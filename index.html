@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chaotic Ad Wall</title>
+
 <style>
 html, body {
   margin: 0;
   height: 100%;
+  background: #000;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
-  background: #000; 
 }
 
 #ad-container {
@@ -18,144 +19,204 @@ html, body {
   width: 100%;
   height: 100%;
 }
+
 .ad {
   position: absolute;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-weight: bold;
   border: 2px solid #fff;
-  color: #000;
-  box-shadow: 0 0 5px #fff;
-  transition: transform 0.3s;
+  background: #111;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 6px #fff;
+  overflow: hidden;
+  transition: transform .25s, box-shadow .25s;
 }
+
 .ad:hover {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 0 20px #fff;
-  z-index: 100;
+  transform: scale(1.06) rotate(2deg);
+  box-shadow: 0 0 18px #fff;
+  z-index: 200;
 }
-.ad div { line-height: 1.2; }
-.middle { z-index: 999; }
-a { text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+.ad.middle {
+  z-index: 999;
+}
+
+.ad a {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ad img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  line-height: 1.2;
+}
 </style>
 </head>
+
 <body>
 <div id="ad-container"></div>
+
 <script>
+/* ================= CONFIG ================= */
+
 const container = document.getElementById('ad-container');
-const colors = ['#f28b82','#fbbc04','#34a853','#4285f4','#aa66cc','#ff7043','#00c851','#33b5e5','#ffbb33','#ff4444'];
+
+const colors = [
+  '#f28b82','#fbbc04','#34a853','#4285f4',
+  '#aa66cc','#ff7043','#00c851','#33b5e5',
+  '#ffbb33','#ff4444'
+];
+
 let placedAds = [];
+const customAds = [];
 
-// Sizes
+/* ================= UTILS ================= */
+
+function pseudo(seed, max) {
+  return Math.abs(Math.sin(seed) * 10000 % 1) * max;
+}
+
 function getSizes() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  const base = Math.min(innerWidth, innerHeight) * 0.3;
   return {
-    baseMiddle: Math.min(vw, vh) * 0.3,
-    middle: Math.min(vw, vh) * 0.3 * 1.5,
-    big: Math.min(vw, vh) * 0.3 * 0.6,
-    medium: Math.min(vw, vh) * 0.3 * 0.4,
-    small: Math.min(vw, vh) * 0.3 * 0.25
-  }
+    middle: base * 1.5,
+    big: base * 0.6,
+    medium: base * 0.42,
+    small: base * 0.28
+  };
 }
 
-// Create ad
-function createAd(size, price, x, y, index=null, type='') {
-  const div = document.createElement('div');
-  div.classList.add('ad');
-  if(type==='middle') div.classList.add('middle');
-  div.style.width = `${size}px`;
-  div.style.height = `${size}px`;
-  div.style.left = `${x - size/2}px`;
-  div.style.top = `${y - size/2}px`;
-  div.style.background = colors[Math.floor(Math.random()*colors.length)];
-  div.style.fontSize = `${Math.max(size*0.15,12)}px`;
-  if(index!==null) div.dataset.index = index;
-  div.innerHTML = `<div>Vieta reklāmai</div><div>${price}</div>`;
-  container.appendChild(div);
-  placedAds.push({x,y,size});
-  return div;
+function clearAds() {
+  container.innerHTML = '';
+  placedAds = [];
 }
 
-// Minimal overlap
-function isValid(x,y,size){
-  for(const ad of placedAds){
+/* ================= PLACEMENT ================= */
+
+function isValid(x, y, size) {
+  for (const ad of placedAds) {
     const dx = Math.abs(x - ad.x);
     const dy = Math.abs(y - ad.y);
-    const minDist = (size+ad.size)/2 - 5;
-    if(dx < minDist && dy < minDist) return false;
+    const minDist = (size + ad.size) / 2 - 6;
+    if (dx < minDist && dy < minDist) return false;
   }
   return true;
 }
 
-// Pseudo random
-function pseudo(seed,max){ return Math.abs(Math.sin(seed)*10000%1)*max; }
+function createAd(size, price, x, y, index, type = '') {
+  const ad = document.createElement('div');
+  ad.className = 'ad' + (type === 'middle' ? ' middle' : '');
+  ad.dataset.index = index;
 
-// Clear container and ads
-function clearAds(){ container.innerHTML=''; placedAds=[]; }
+  ad.style.width = ad.style.height = size + 'px';
+  ad.style.left = (x - size / 2) + 'px';
+  ad.style.top = (y - size / 2) + 'px';
+  ad.style.background = colors[index % colors.length];
+  ad.style.fontSize = Math.max(size * 0.14, 11) + 'px';
 
-// Generate deterministic layout
-function generateAds(count,size,price,seedStart, vw, vh, avoidMiddle=false){
-  let adCount=0; let attemptOffset=0;
-  const middleX=vw/2; const middleY=vh/2;
-  while(adCount<count){
-    const seed=seedStart+adCount;
-    let x=pseudo(seed*7+attemptOffset,vw-size)+size/2;
-    let y=pseudo(seed*13+attemptOffset,vh-size)+size/2;
-    if(avoidMiddle){
-      const safe=(getSizes().middle)/2 + size/2 +5;
-      if(Math.abs(x-middleX)<safe && Math.abs(y-middleY)<safe){
-        if(x<middleX)x-=safe/2; else x+=safe/2;
-        if(y<middleY)y-=safe/2; else y+=safe/2;
+  ad.innerHTML = `
+    <div class="placeholder">
+      <div>Vieta reklāmai</div>
+      <div>${price}</div>
+    </div>
+  `;
+
+  container.appendChild(ad);
+  placedAds.push({ x, y, size });
+}
+
+/* ================= GENERATORS ================= */
+
+function generateGroup(count, size, price, seedBase, vw, vh, avoidMiddle) {
+  let created = 0;
+  let attempts = 0;
+  const cx = vw / 2;
+  const cy = vh / 2;
+
+  while (created < count && attempts < count * 80) {
+    const seed = seedBase + created + attempts;
+    let x = pseudo(seed * 7, vw - size) + size / 2;
+    let y = pseudo(seed * 13, vh - size) + size / 2;
+
+    if (avoidMiddle) {
+      const safe = getSizes().middle / 2 + size / 2 + 12;
+      if (Math.abs(x - cx) < safe && Math.abs(y - cy) < safe) {
+        x += x < cx ? -safe : safe;
+        y += y < cy ? -safe : safe;
       }
     }
-    if(isValid(x,y,size)){
-      createAd(size,price,x,y,seedStart+adCount);
-      adCount++; attemptOffset=0;
-    } else { attemptOffset++; if(attemptOffset>50){ attemptOffset=0; adCount++; } }
+
+    if (isValid(x, y, size)) {
+      createAd(size, price, x, y, seedBase + created);
+      created++;
+    }
+    attempts++;
   }
 }
 
-// Set custom ad content
-function setAdContent(index,imageUrl,text,link){
-  const ad=document.querySelector(`.ad[data-index="${index}"]`);
-  if(!ad) return;
-  ad.innerHTML=`<a href="${link}" target="_blank">
-    <img src="${imageUrl}" style="width:90%;height:70%;object-fit:cover;border-radius:5px;">
-    <div style="margin-top:5px;font-weight:bold;">${text}</div>
-  </a>`;
+/* ================= CUSTOM ADS ================= */
+
+function setAdContent(index, image, link) {
+  customAds.push({ index, image, link });
+  applyAdContent(index, image, link);
 }
 
-// Generate layouts based on screen
-function generateLayout(){
+function applyAdContent(index, image, link) {
+  const ad = document.querySelector(`.ad[data-index="${index}"]`);
+  if (!ad) return;
+
+  ad.innerHTML = `
+    <a href="${link}" target="_blank">
+      <img src="${image}">
+    </a>
+  `;
+}
+
+/* ================= LAYOUT ================= */
+
+function generateLayout() {
   clearAds();
-  const vw=window.innerWidth, vh=window.innerHeight;
-  const sizes=getSizes();
-  if(vh>vw){ // Mobile layout
-    // Middle at top-ish for scrolling
-    const middleX=vw/2, middleY=sizes.middle/2 + 20;
-    createAd(sizes.middle,'20 €/mēnesī',middleX,middleY,'middle',0);
-    generateAds(15,sizes.big,'4 €/mēnesī',1,vw,vh,true);
-    generateAds(25,sizes.medium,'2 €/mēnesī',100,vw,vh,true);
-    generateAds(50,sizes.small,'1 €/mēnesī',200,vw,vh,true);
-  } else { // Desktop layout
-    const middleX=vw/2, middleY=vh/2;
-    createAd(sizes.middle,'20 €/mēnesī',middleX,middleY,'middle',0);
-    generateAds(15,sizes.big,'4 €/mēnesī',1,vw,vh,true);
-    generateAds(25,sizes.medium,'2 €/mēnesī',100,vw,vh,true);
-    generateAds(50,sizes.small,'1 €/mēnesī',200,vw,vh,true);
+
+  const vw = innerWidth;
+  const vh = innerHeight;
+  const sizes = getSizes();
+
+  if (vh > vw) {
+    createAd(sizes.middle, '20 €/mēnesī', vw / 2, sizes.middle / 2 + 24, 0, 'middle');
+  } else {
+    createAd(sizes.middle, '20 €/mēnesī', vw / 2, vh / 2, 0, 'middle');
   }
+
+  generateGroup(15, sizes.big, '4 €/mēnesī', 1, vw, vh, true);
+  generateGroup(25, sizes.medium, '2 €/mēnesī', 100, vw, vh, true);
+  generateGroup(50, sizes.small, '1 €/mēnesī', 200, vw, vh, true);
+
+  customAds.forEach(ad =>
+    applyAdContent(ad.index, ad.image, ad.link)
+  );
 }
 
-// Initial layout
-generateLayout();
-setAdContent(5,'https://via.placeholder.com/150','Custom Ad Text','https://example.com');
-setAdContent(0,'https://via.placeholder.com/300','Middle Ad','https://example.com');
+/* ================= INIT ================= */
 
-// Regenerate layout on resize
-window.addEventListener('resize',generateLayout);
+generateLayout();
+
+setAdContent(
+  0,
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYkfbTSWQD_drBS40p7TJGFpotL1r2yU05qA&s',
+  'https://tiktok.com/@arv.is'
+);
+
+window.addEventListener('resize', generateLayout);
 </script>
 </body>
 </html>
