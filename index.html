@@ -45,6 +45,12 @@ html, body {
   z-index: 999;
 }
 
+.ad.filled {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
 .ad a {
   width: 100%;
   height: 100%;
@@ -54,7 +60,7 @@ html, body {
 .ad img {
   width: 100%;
   height: 100%;
-  object-fit: fit;
+  object-fit: contain;
 }
 
 .placeholder {
@@ -78,13 +84,11 @@ const colors = [
 let placedAds = [];
 const customAds = [];
 
-function pseudo(seed, max) 
-{
+function pseudo(seed, max) {
   return Math.abs(Math.sin(seed) * 10000 % 1) * max;
 }
 
-function getSizes() 
-{
+function getSizes() {
   const base = Math.min(innerWidth, innerHeight) * 0.3;
   return {
     middle: base * 1.5,
@@ -94,28 +98,22 @@ function getSizes()
   };
 }
 
-function clearAds() 
-{
+function clearAds() {
   container.innerHTML = '';
   placedAds = [];
 }
 
-
-function isValid(x, y, size) 
-{
-    for (const ad of placedAds) 
-    {
-        const dx = Math.abs(x - ad.x);
-        const dy = Math.abs(y - ad.y);
-        const minDist = (size + ad.size) / 2 - 6;
-        if (dx < minDist && dy < minDist) return false;
-    }
-
+function isValid(x, y, size) {
+  for (const ad of placedAds) {
+    const dx = Math.abs(x - ad.x);
+    const dy = Math.abs(y - ad.y);
+    const minDist = (size + ad.size) / 2 - 6;
+    if (dx < minDist && dy < minDist) return false;
+  }
   return true;
 }
 
-function createAd(size, price, x, y, index, type = '') 
-{
+function createAd(size, price, x, y, index, type = '') {
   const ad = document.createElement('div');
   ad.className = 'ad' + (type === 'middle' ? ' middle' : '');
   ad.dataset.index = index;
@@ -137,31 +135,26 @@ function createAd(size, price, x, y, index, type = '')
   placedAds.push({ x, y, size });
 }
 
-
-function generateGroup(count, size, price, seedBase, vw, vh, avoidMiddle) 
-{
+function generateGroup(count, size, price, seedBase, vw, vh, avoidMiddle) {
   let created = 0;
   let attempts = 0;
   const cx = vw / 2;
   const cy = vh / 2;
 
-    while (created < count && attempts < count * 80) 
-    {
-        const seed = seedBase + created + attempts;
-        let x = pseudo(seed * 7, vw - size) + size / 2;
-        let y = pseudo(seed * 13, vh - size) + size / 2;
+  while (created < count && attempts < count * 80) {
+    const seed = seedBase + created + attempts;
+    let x = pseudo(seed * 7, vw - size) + size / 2;
+    let y = pseudo(seed * 13, vh - size) + size / 2;
 
-        if (avoidMiddle) {
-            const safe = getSizes().middle / 2 + size / 2 + 12;
-        if (Math.abs(x - cx) < safe && Math.abs(y - cy) < safe) 
-        {
-            x += x < cx ? -safe : safe;
-            y += y < cy ? -safe : safe;
-        }
+    if (avoidMiddle) {
+      const safe = getSizes().middle / 2 + size / 2 + 12;
+      if (Math.abs(x - cx) < safe && Math.abs(y - cy) < safe) {
+        x += x < cx ? -safe : safe;
+        y += y < cy ? -safe : safe;
+      }
     }
 
-    if (isValid(x, y, size)) 
-    {
+    if (isValid(x, y, size)) {
       createAd(size, price, x, y, seedBase + created);
       created++;
     }
@@ -169,16 +162,17 @@ function generateGroup(count, size, price, seedBase, vw, vh, avoidMiddle)
   }
 }
 
-function setAdContent(index, image, link) 
-{
+function setAdContent(index, image, link) {
   customAds.push({ index, image, link });
   applyAdContent(index, image, link);
 }
 
-function applyAdContent(index, image, link) 
-{
+function applyAdContent(index, image, link) {
   const ad = document.querySelector(`.ad[data-index="${index}"]`);
   if (!ad) return;
+
+  ad.classList.add('filled');
+  ad.style.background = 'transparent';
 
   ad.innerHTML = `
     <a href="${link}" target="_blank">
@@ -188,22 +182,18 @@ function applyAdContent(index, image, link)
 }
 
 
-function generateLayout() 
-{
+function generateLayout() {
   clearAds();
 
   const vw = innerWidth;
   const vh = innerHeight;
   const sizes = getSizes();
 
-    if (vh > vw) 
-    {
-        createAd(sizes.middle, '20 €/mēnesī', vw / 2, sizes.middle / 2 + 24, 0, 'middle');
-    } 
-    else 
-    {
-        createAd(sizes.middle, '20 €/mēnesī', vw / 2, vh / 2, 0, 'middle');
-    }
+  if (vh > vw) {
+    createAd(sizes.middle, '20 €/mēnesī', vw / 2, sizes.middle / 2 + 24, 0, 'middle');
+  } else {
+    createAd(sizes.middle, '20 €/mēnesī', vw / 2, vh / 2, 0, 'middle');
+  }
 
   generateGroup(15, sizes.big, '4 €/mēnesī', 1, vw, vh, true);
   generateGroup(25, sizes.medium, '2 €/mēnesī', 100, vw, vh, true);
@@ -216,7 +206,6 @@ function generateLayout()
 
 generateLayout();
 
-
 setAdContent(
   0,
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYkfbTSWQD_drBS40p7TJGFpotL1r2yU05qA&s',
@@ -225,7 +214,7 @@ setAdContent(
 
 setAdContent(
   10,
-  'https://media.discordapp.net/attachments/1134190465143554149/1457441504929910805/CLICK_ME.png?ex=695c03ac&is=695ab22c&hm=190d54b0b609a8827a1f76054fc2e1df38be42c0ab58390bc9bae115776f3a02&=&format=webp&quality=lossless&width=1126&height=977',
+  'https://media.discordapp.net/attachments/1134190465143554149/1457441504929910805/CLICK_ME.png',
   'https://x.com/crowsnestesport'
 );
 
