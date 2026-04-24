@@ -1,239 +1,602 @@
 <!DOCTYPE html>
-<html lang="lv">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chaotic Ad Wall</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riga Kebab Reviews</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-html, body {
-  margin: 0;
-  height: 100%;
-  background: #000;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: hidden;
-}
+        :root {
+            --bg-dark: #0f0f0f;
+            --bg-darker: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-primary: #ff6b35;
+            --accent-secondary: #f7931e;
+            --border-color: #2a2a2a;
+            --hover-state: #252525;
+        }
 
-#ad-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+        }
 
-.ad {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border: 2px solid #fff;
-  background: #111;
-  color: #fff;
-  font-weight: bold;
-  box-shadow: 0 0 6px #fff;
-  overflow: hidden;
-  transition: transform .25s, box-shadow .25s;
-}
+        body {
+            display: flex;
+            flex-direction: column;
+        }
 
-.ad:hover {
-  transform: scale(1.06) rotate(2deg);
-  box-shadow: 0 0 18px #fff;
-  z-index: 200;
-}
+        .header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 20px;
+            z-index: 100;
+        }
 
-.ad.middle {
-  z-index: 999;
-}
+        .header-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin: 0;
+        }
 
-.ad.filled {
-  background: transparent;
-  box-shadow: 0 0 10px #fff;
-}
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
 
-.ad a {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+        .map-container {
+            flex: 1;
+            position: relative;
+            background-color: var(--bg-darker);
+            min-height: 300px;
+        }
 
-.ad img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
+        #map {
+            width: 100%;
+            height: 100%;
+        }
 
-.placeholder {
-  line-height: 1.2;
-}
-</style>
+        .leaflet-container {
+            background-color: var(--bg-darker);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .leaflet-control-attribution {
+            background-color: rgba(26, 26, 26, 0.8) !important;
+            color: var(--text-secondary) !important;
+            border: 1px solid var(--border-color) !important;
+            font-size: 11px !important;
+        }
+
+        .leaflet-control-attribution a {
+            color: var(--accent-primary) !important;
+        }
+
+        .leaflet-control-zoom {
+            border: 1px solid var(--border-color) !important;
+            border-radius: 4px !important;
+            background-color: var(--bg-card) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .leaflet-control-zoom a {
+            background-color: var(--bg-card) !important;
+            color: var(--text-primary) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 18px !important;
+        }
+
+        .leaflet-control-zoom a:hover {
+            background-color: var(--hover-state) !important;
+        }
+
+        .leaflet-control-zoom a:first-child {
+            border-radius: 4px 4px 0 0 !important;
+        }
+
+        .leaflet-control-zoom a:last-child {
+            border-radius: 0 0 4px 4px !important;
+            border-bottom: none !important;
+        }
+
+        .custom-marker {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--bg-darker);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 0px var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .custom-marker:hover {
+            box-shadow: 0 0 0 3px var(--accent-primary);
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px !important;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+        }
+
+        .leaflet-popup-content {
+            margin: 0 !important;
+            padding: 16px !important;
+            width: 100% !important;
+        }
+
+        .leaflet-popup-tip {
+            background-color: var(--bg-card) !important;
+            border-top: 1px solid var(--border-color) !important;
+        }
+
+        .place-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            font-family: 'Syne', sans-serif;
+            word-break: break-word;
+        }
+
+        .place-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .rating-stars {
+            color: var(--accent-secondary);
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        .rating-number {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .place-review {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .place-review {
+                max-height: 100px;
+            }
+        }
+
+        .place-review::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .place-review::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+            border-radius: 2px;
+        }
+
+        .place-review::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 2px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+
+        .social-btn {
+            padding: 10px 14px;
+            background-color: var(--hover-state);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            touch-action: manipulation;
+        }
+
+        .social-btn:hover {
+            background-color: var(--accent-primary);
+            color: var(--bg-dark);
+            border-color: var(--accent-primary);
+        }
+
+        .social-btn:active {
+            transform: scale(0.95);
+        }
+
+        .content-section {
+            background-color: var(--bg-dark);
+            padding: 40px 24px;
+            width: 100%;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+        }
+
+        .section-text {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--bg-card);
+            padding: 24px 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 14px;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            body {
+                height: 100vh;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+
+            .map-container {
+                flex: 1;
+                min-height: 250px;
+            }
+
+            .section-text {
+                font-size: 13px;
+                line-height: 1.6;
+            }
+
+            .section-title {
+                font-size: 22px;
+                margin-bottom: 16px;
+            }
+
+            .content-section {
+                padding: 32px 16px;
+            }
+
+            .place-name {
+                font-size: 16px;
+            }
+
+            .social-btn {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+
+            .leaflet-popup-content {
+                padding: 12px !important;
+            }
+
+            .leaflet-control-zoom {
+                margin: 10px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 18px;
+            }
+
+            .header-subtitle {
+                font-size: 11px;
+            }
+
+            .map-container {
+                min-height: 200px;
+            }
+
+            .content-section {
+                padding: 24px 12px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .section-text {
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            .place-name {
+                font-size: 15px;
+            }
+
+            .place-rating {
+                font-size: 13px;
+            }
+
+            .place-review {
+                font-size: 12px;
+                max-height: 80px;
+            }
+
+            .social-links {
+                gap: 6px;
+            }
+
+            .social-btn {
+                padding: 10px 12px;
+                font-size: 11px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-<div id="ad-container"></div>
-
-<script>
-const container = document.getElementById('ad-container');
-
-const colors = [
-  '#f28b82','#fbbc04','#34a853','#4285f4',
-  '#aa66cc','#ff7043','#00c851','#33b5e5',
-  '#ffbb33','#ff4444'
-];
-
-let placedAds = [];
-const customAds = [];
-
-function pseudo(seed, max) {
-  return Math.abs(Math.sin(seed) * 10000 % 1) * max;
-}
-
-function getSizes() {
-  const base = Math.min(innerWidth, innerHeight) * 0.3;
-  return {
-    middle: base * 1.5,
-    big: base * 0.6,
-    medium: base * 0.42,
-    small: base * 0.28
-  };
-}
-
-function clearAds() {
-  container.innerHTML = '';
-  placedAds = [];
-}
-
-function isValid(x, y, size) {
-  for (const ad of placedAds) {
-    const dx = Math.abs(x - ad.x);
-    const dy = Math.abs(y - ad.y);
-    const minDist = (size + ad.size) / 2 - 6;
-    if (dx < minDist && dy < minDist) return false;
-  }
-  return true;
-}
-
-function createAd(size, price, x, y, index, type = '') {
-  const ad = document.createElement('div');
-  ad.className = 'ad' + (type === 'middle' ? ' middle' : '');
-  ad.dataset.index = index;
-
-  ad.style.width = ad.style.height = size + 'px';
-  ad.style.left = (x - size / 2) + 'px';
-  ad.style.top = (y - size / 2) + 'px';
-  ad.style.background = colors[index % colors.length];
-  ad.style.fontSize = Math.max(size * 0.14, 11) + 'px';
-
-  ad.innerHTML = `
-    <div class="placeholder">
-      <div>Vieta reklāmai</div>
-      <div>${price}</div>
+    <div class="header">
+        <h1 class="header-title">Rīgas kebabu atsauces</h1>
+        <p class="header-subtitle">Es jau pus gadu taisu saturu internetā ar to kā es nogaršoju kebabus. 
+            Kā public service izdomāju, ka palaidīšu šo karti, lai varat paskatīties kas ir labākās vietas ( manuprāt ). 
+            <br> Kontekstam: lai ir godīgi, es vienmēr ņemu vienu un to pašu - vidējo, vidēji aso, mix kebabu lavašā</p>
     </div>
-  `;
 
-  container.appendChild(ad);
-  placedAds.push({ x, y, size });
-}
+    <div class="map-container">
+        <div id="map"></div>
+        <div class="loading" id="loading">Lādējās kebabu lokācijas...</div>
+    </div>
 
-function generateGroup(count, size, price, seedBase, vw, vh, avoidMiddle) {
-  let created = 0;
-  let attempts = 0;
-  const cx = vw / 2;
-  const cy = vh / 2;
+    <div class="content-section">
+        <h2 class="section-title">Par šo karti</h2>
+        <p class="section-text">
+            Mājaslapas loģiku izdomāju es ( tas nebija tik grūti ar OpenStreetMap), 
+            BET dizains ir ģenerēts ar AI ( tieši responsīvā daļa, lai izskatās labi uz telefona ). 
+            Lūdzu neheitojat mani par šo, es jums pasniegtu raw json, bet tas vienkārši izskatītos nesmuki.
+        </p>
+    </div>
 
-  while (created < count && attempts < count * 80) {
-    const seed = seedBase + created + attempts;
-    let x = pseudo(seed * 7, vw - size) + size / 2;
-    let y = pseudo(seed * 13, vh - size) + size / 2;
+    <script>
+        const kebabsData = [
+            {
+                "name": "Al Taza Kebabs",
+                "coordinates": {
+                    "lat": 56.960702051345564, 
+                    "lng": 24.132190744532533
+                },
+                "review": "Cena par šo kebabu bija 6 eur, bet 13:00 -> 17:00 viņiem ir atlaides, kuru dēļ cena bija 4.80 eur. Pati garša bija labs. Sastāvdaļas bija svaigas. Vislabākais ko viņi dabūja pareizi ir ASUMA līmenis. Kebabs nebija pārāk ass vai pārāk neass, kā arī asumam bija garša nevis tikai sāpes.",
+                "rating": 8,
+                "links": {
+                    "youtube": "https://www.youtube.com/shorts/m3TOfLf1Iuk",
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7631185342346857750?is_from_webapp=1&sender_device=pc&web_id=7614929428832912918",
+                    "instagram": "https://www.instagram.com/reel/DXZBzFNjCyb/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA=="
+                }
+            },
+            {
+                "name": "Kebab Grill",
+                "coordinates": {
+                    "lat": 56.93137207666841,
+                    "lng": 24.038444017765627
+                },
+                "review": "Cena par šo kebabu bija 5.90 eur. Interesanti, ka šajā kebabā iekšā bija frī kartupeļi, bet to bija ļoti maz. Kebabs nebija vispār ass, izņemot pēdējo kodienu, kurā bija sakritusi visa mērce. Teiktu, ka tas nebija nekas īpašs.",
+                "rating": 7,
+                "links": {
+                    "youtube": "https://www.youtube.com/shorts/MdKseJuM0zI",
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7624589450949020950",
+                    "instagram": "https://www.instagram.com/reel/DWraYfvjAMS/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+                }
+            },
+            {
+                "name": "LATVIJAS KEBABS UN BISTRO - ZOLITUDE",
+                "coordinates": {
+                    "lat": 56.946963303518224, 
+                    "lng": 24.025971289244758
+                },
+                "review": "Cena par šo kebabu bija 5.50 eur, bet tas bija viens no lielākajiem ko jebkad esmu redzējis. Garšas ziņā es teiktu, ka produkti bija svaigi, garša ļoti laba un asums perfekts. Šis ir šobrīd mans TOP ieteikums ja esi tuvumā un izsalcis pēc kebaba.",
+                "rating": 9.5,
+                "links": {
+                    "youtube": "https://www.youtube.com/shorts/kVTFVwQ6XZg",
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7621579672710548738",
+                    "instagram": "https://www.instagram.com/reel/DWWiBoeDFtg/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+                }
+            },
+            {
+                "name": "Anatolia Kebabs",
+                "coordinates": {
+                    "lat": 56.95709189941834,  
+                    "lng": 24.12377139822651
+                },
+                "review": "Cena par šo kebabu bija 6.50 eur, kebabs bija diez gan liels gan garumā, gan platumā. Gaļa nebija tā svaigākā un mērce mazliet trūka, bet kopumā bija laba garša.",
+                "rating": 8.5,
+                "links": {
+                    "youtube": "https://www.youtube.com/shorts/XzN4POf6Hc8",
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7621579672710548738",
+                    "instagram": "https://www.instagram.com/reel/DV3RdDzDMpM/"
+                }
+            },
+            {
+                "name": "Kebab Factory Food Court",
+                "coordinates": {
+                    "lat": 56.95570438722061, 
+                    "lng": 24.1256372074834
+                },
+                "review": "Cena par šo kebabu bija 6.90 eur. No visiem kebabiem, šo bija visērtāk ēst, jo bija speciāla paciņa tieši šim paredzēta. Dīvaini bija, ka iekšā bija svaigi rīvēti burkāni. Bet kopumā labs kebabs.",
+                "rating": 9,
+                "links": {
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7575335485619375382",
+                    "instagram": "https://www.instagram.com/notarvis/reel/DRXoOWajEGr/"
+                }
+            },
+            {
+                "name": "Indiesu kebab",
+                "coordinates": {
+                    "lat": 56.935323813721865, 
+                    "lng":  24.072144517002968
+                },
+                "review": "Cenu par šo kebabu bija 5.50 eur. Pats kebabs nebija tas pats labākais. Mazliet par daudz salāti, par maz gaļa. Viss krita ārā. Asums bija gandrīz nekāds.",
+                "rating": 7,
+                "links": {
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7573011273097481494",
+                    "instagram": "https://www.instagram.com/reel/DRFVxrYDDjv/"
+                }
+            },
+            {
+                "name": "Has kebabs",
+                "coordinates": {
+                    "lat": 56.90407362003028,
+                    "lng": 24.097661874182663
+                },
+                "review": "Cenu par šo kebabu bija 5.90 eur. Izmērs bija diez gan mazs salīdzinot ar citām kebabnīcām. Neskatoties uz to, teiktu, ka solid kebabs. Nav kam piekasīties.",
+                "rating": 9,
+                "links": {
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7563344620084612374",
+                }
+            },
+            {
+                "name": "Rīgas kebabs",
+                "coordinates": {
+                    "lat": 56.95127088901499,
+                    "lng": 24.116191382997723
+                },
+                "review": "Pirmo reizi paņēmu nevis kebabu, bet kebaba plati. Plate bija ļoti garšīga, bet noteikti būs atkārtotie jāierodas, lai updeitotu informāciju. Iemesls platei bija tāds, ka nejauši nointervēju darbinieku un tieši šo viņš man ieteica paņemt.",
+                "rating": 8.5,
+                "links": {
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7553337786766576918",
+                }
+            },
+            {
+                "name": "Pakistanas kebabs",
+                "coordinates": {
+                    "lat": 56.950632687712286, 
+                    "lng": 24.12549949857992
+                },
+                "review": "Cena bija 3.90, bet par mazo kebabu. Šis bija mans pirmais review, tāpēc video atsauksmē iedevu augstu 7/10 kaut gan kebabs bija diez gan slikts. Vienīgā labā lieta par to bija asums.",
+                "rating": 6.5,
+                "links": {
+                    "tiktok": "https://www.tiktok.com/@arv.is/video/7551816503381822742",
+                }
+            },
+        ];
 
-    if (avoidMiddle) {
-      const safe = getSizes().middle / 2 + size / 2 + 12;
-      if (Math.abs(x - cx) < safe && Math.abs(y - cy) < safe) {
-        x += x < cx ? -safe : safe;
-        y += y < cy ? -safe : safe;
-      }
-    }
+        // Initialize map
+        const map = L.map('map', {
+            center: [56.9496, 24.1052],
+            zoom: 13,
+            zoomControl: true,
+            attributionControl: true
+        });
 
-    if (isValid(x, y, size)) {
-      createAd(size, price, x, y, seedBase + created);
-      created++;
-    }
-    attempts++;
-  }
-}
+        // Dark theme tile layer
+        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors © CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
 
-function setAdContent(index, image, link) {
-  customAds.push({ index, image, link });
-  applyAdContent(index, image, link);
-}
+        // Custom marker icon - will be updated with image for each location
+        function createMarkerIcon(imageName) {
+            return L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="width: 100%; height: 100%; background-image: url('images/${imageName}'); background-size: cover; background-position: center; border-radius: 50%;"></div>`,
+                iconSize: [48, 48],
+                popupAnchor: [0, -30]
+            });
+        }
 
-function applyAdContent(index, image, link) {
-  const ad = document.querySelector(`.ad[data-index="${index}"]`);
-  if (!ad) return;
+        // Load kebab data
+        function loadKebabs() {
+            try {
+                document.getElementById('loading').style.display = 'none';
 
-  ad.classList.add('filled');
-  ad.style.background = 'transparent';
+                kebabsData.forEach(kebab => {
+                    // Convert kebab name to image filename (replace spaces with underscores, add .png)
+                    const imageName = kebab.name.replace(/\s+/g, '_') + '.png';
+                    
+                    const marker = L.marker(
+                        [kebab.coordinates.lat, kebab.coordinates.lng],
+                        { icon: createMarkerIcon(imageName) }
+                    ).addTo(map);
 
-  ad.innerHTML = `
-    <a href="${link}" target="_blank">
-      <img src="${image}">
-    </a>
-  `;
-}
+                    // Create popup content with half-star support
+                    const fullStars = Math.floor(kebab.rating);
+                    const hasHalfStar = kebab.rating % 1 !== 0;
+                    const emptyStars = 10 - fullStars - (hasHalfStar ? 1 : 0);
+                    const starsHTML = '★'.repeat(fullStars) + (hasHalfStar ? '½' : '') + '☆'.repeat(emptyStars);
+                    
+                    const popupHTML = `
+                        <div class="popup-content">
+                            <div class="place-name">${kebab.name}</div>
+                            <div class="place-rating">
+                                <span class="rating-stars">${starsHTML}</span>
+                                <span class="rating-number">${kebab.rating}/10</span>
+                            </div>
+                            <div class="place-review">"${kebab.review}"</div>
+                            <div class="social-links">
+                                ${kebab.links.youtube ? `<a href="${kebab.links.youtube}" target="_blank" class="social-btn">YouTube</a>` : ''}
+                                ${kebab.links.tiktok ? `<a href="${kebab.links.tiktok}" target="_blank" class="social-btn">TikTok</a>` : ''}
+                                ${kebab.links.instagram ? `<a href="${kebab.links.instagram}" target="_blank" class="social-btn">Instagram</a>` : ''}
+                            </div>
+                        </div>
+                    `;
 
-function generateLayout() {
-  clearAds();
+                    const popupOptions = window.innerWidth > 768 ? 
+                        { maxWidth: 1200, minWidth: 1000, maxHeight: 600, className: 'popup-content' } :
+                        { maxWidth: 600, minWidth: 550, className: 'popup-content' };
+                    
+                    marker.bindPopup(popupHTML, popupOptions);
+                });
+            } catch (error) {
+                document.getElementById('loading').textContent = 'Error loading kebab data.';
+                console.error('Error loading kebabs:', error);
+            }
+        }
 
-  const vw = innerWidth;
-  const vh = innerHeight;
-  const sizes = getSizes();
-
-  if (vh > vw) {
-    createAd(sizes.middle, '20 €/mēnesī', vw / 2, sizes.middle / 2 + 24, 0, 'middle');
-  } else {
-    createAd(sizes.middle, '20 €/mēnesī', vw / 2, vh / 2, 0, 'middle');
-  }
-
-  generateGroup(15, sizes.big, '4 €/mēnesī', 1, vw, vh, true);
-  generateGroup(25, sizes.medium, '2 €/mēnesī', 100, vw, vh, true);
-  generateGroup(50, sizes.small, '1 €/mēnesī', 200, vw, vh, true);
-
-  customAds.forEach(ad =>
-    applyAdContent(ad.index, ad.image, ad.link)
-  );
-}
-
-generateLayout();
-
-setAdContent(
-  0,
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYkfbTSWQD_drBS40p7TJGFpotL1r2yU05qA&s',
-  'https://tiktok.com/@arv.is'
-);
-
-setAdContent(
-  10,
-  'adImages/Ernests.webp',
-  'https://x.com/crowsnestesport'
-);
-
-setAdContent(
-  9,
-  'adImages/VaibsCuratajs.jpeg',
-  'https://www.tiktok.com/@vaibs.urators' 
-);
-
-setAdContent(
-  202,
-  'adImages/VentspilsCitadele.png',
-  'https://www.reddit.com/r/latvia/comments/1slbrls/karte_cik_izdev%C4%ABgi_tev_b%C5%ABtu_ja_ventspil%C4%AB_atv%C4%93rtu/'
-);
-
-window.addEventListener('resize', generateLayout);
-</script>
-
-<script>
-    fetch('https://api.counterapi.dev/v2/arvis-ceiruliss-team-2383/first-counter-2383/up', { method: 'GET' });
-</script>
+        loadKebabs();
+    </script>
 </body>
 </html>
-
