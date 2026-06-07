@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arvja Svars</title>
+    <link rel="icon" type="image/x-icon" href="images/icon2.ico">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+        (function() {
+            const FORMATS = {
+                datetime: 'dd MMM yyyy',
+                millisecond: 'HH:mm:ss.SSS',
+                second: 'HH:mm:ss',
+                minute: 'HH:mm',
+                hour: 'HH:mm',
+                day: 'd MMM',
+                week: 'd MMM',
+                month: 'MMM yy',
+                quarter: 'MMM yy',
+                year: 'yyyy'
+            };
+            function pad(n) { return String(n).padStart(2, '0'); }
+            function toDate(v) { return v instanceof Date ? v : new Date(v); }
+            Chart._adapters._date.override({
+                formats: () => FORMATS,
+                parse(v) { const d = toDate(v); return isNaN(d) ? null : d.getTime(); },
+                format(ms, fmt) {
+                    const d = new Date(ms);
+                    const map = {
+                        yyyy: d.getFullYear(),
+                        MM: pad(d.getMonth() + 1),
+                        MMM: d.toLocaleDateString('lv-LV', { month: 'short' }),
+                        dd: pad(d.getDate()),
+                        d: d.getDate(),
+                        HH: pad(d.getHours()),
+                        mm: pad(d.getMinutes()),
+                        ss: pad(d.getSeconds()),
+                        SSS: String(d.getMilliseconds()).padStart(3, '0'),
+                        yy: String(d.getFullYear()).slice(-2)
+                    };
+                    return fmt.replace(/yyyy|MMM|MM|dd|HH|mm|ss|SSS|yy|d/g, m => map[m] !== undefined ? map[m] : m);
+                },
+                add(ms, amount, unit) {
+                    const d = new Date(ms);
+                    const u = { millisecond: 'ms', second: 's', minute: 'min', hour: 'h', day: 'd', week: 'w', month: 'mo', quarter: 'q', year: 'y' };
+                    switch(unit) {
+                        case 'millisecond': d.setMilliseconds(d.getMilliseconds() + amount); break;
+                        case 'second':      d.setSeconds(d.getSeconds() + amount); break;
+                        case 'minute':      d.setMinutes(d.getMinutes() + amount); break;
+                        case 'hour':        d.setHours(d.getHours() + amount); break;
+                        case 'day':         d.setDate(d.getDate() + amount); break;
+                        case 'week':        d.setDate(d.getDate() + amount * 7); break;
+                        case 'month':       d.setMonth(d.getMonth() + amount); break;
+                        case 'quarter':     d.setMonth(d.getMonth() + amount * 3); break;
+                        case 'year':        d.setFullYear(d.getFullYear() + amount); break;
+                    }
+                    return d.getTime();
+                },
+                diff(a, b, unit) {
+                    const ms = a - b;
+                    const s = ms / 1000, m = s / 60, h = m / 60, d = h / 24;
+                    switch(unit) {
+                        case 'millisecond': return ms;
+                        case 'second':      return s;
+                        case 'minute':      return m;
+                        case 'hour':        return h;
+                        case 'day':         return d;
+                        case 'week':        return d / 7;
+                        case 'month':       return (new Date(a).getFullYear() - new Date(b).getFullYear()) * 12 + new Date(a).getMonth() - new Date(b).getMonth();
+                        case 'quarter':     return this.diff(a, b, 'month') / 3;
+                        case 'year':        return new Date(a).getFullYear() - new Date(b).getFullYear();
+                    }
+                },
+                startOf(ms, unit) {
+                    const d = new Date(ms);
+                    switch(unit) {
+                        case 'second':  d.setMilliseconds(0); break;
+                        case 'minute':  d.setSeconds(0, 0); break;
+                        case 'hour':    d.setMinutes(0, 0, 0); break;
+                        case 'day':     d.setHours(0, 0, 0, 0); break;
+                        case 'week':    d.setHours(0,0,0,0); d.setDate(d.getDate() - d.getDay()); break;
+                        case 'month':   d.setDate(1); d.setHours(0,0,0,0); break;
+                        case 'quarter': d.setMonth(Math.floor(d.getMonth()/3)*3, 1); d.setHours(0,0,0,0); break;
+                        case 'year':    d.setMonth(0, 1); d.setHours(0,0,0,0); break;
+                    }
+                    return d.getTime();
+                },
+                endOf(ms, unit) {
+                    const d = new Date(ms);
+                    switch(unit) {
+                        case 'second':  d.setMilliseconds(999); break;
+                        case 'minute':  d.setSeconds(59, 999); break;
+                        case 'hour':    d.setMinutes(59, 59, 999); break;
+                        case 'day':     d.setHours(23, 59, 59, 999); break;
+                        case 'week':    d.setHours(23,59,59,999); d.setDate(d.getDate() + (6 - d.getDay())); break;
+                        case 'month':   d.setMonth(d.getMonth()+1, 0); d.setHours(23,59,59,999); break;
+                        case 'quarter': d.setMonth(Math.floor(d.getMonth()/3)*3+3, 0); d.setHours(23,59,59,999); break;
+                        case 'year':    d.setMonth(11, 31); d.setHours(23,59,59,999); break;
+                    }
+                    return d.getTime();
+                }
+            });
+        })();
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #0f0f0f;
+            --bg-darker: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-primary: #ff6b35;
+            --accent-weight: #4ecdc4;
+            --accent-goal: #ff6b6b;
+            --border-color: #2a2a2a;
+            --hover-state: #252525;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        body { display: flex; flex-direction: column; }
+
+        .header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .header-left { flex: 1; }
+
+        .header-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-weight);
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--accent-primary);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            background-color: var(--accent-primary);
+            color: var(--bg-dark);
+            border-color: var(--accent-primary);
+        }
+
+        .nav-link.diet {
+            color: var(--accent-weight);
+            border-color: var(--accent-weight);
+        }
+
+        .nav-link.diet:hover {
+            background-color: var(--accent-weight);
+            color: var(--bg-dark);
+            border-color: var(--accent-weight);
+        }
+
+        .weight-stats-row {
+            display: flex;
+            gap: 16px;
+            padding: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 120px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--accent-weight);
+        }
+
+        .stat-value.down { color: #6bffb8; }
+        .stat-value.up   { color: #ff6b6b; }
+
+        .stat-unit {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .chart-wrapper {
+            padding: 0 24px 24px;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .chart-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            height: 340px;
+            position: relative;
+        }
+
+        .weight-entries-section {
+            padding: 0 24px 40px;
+        }
+
+        .weight-entries-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .entry-count {
+            font-size: 12px;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 8px;
+        }
+
+        .weight-entries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .weight-entry {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 13px;
+        }
+
+        .weight-entry-date { color: var(--text-secondary); }
+
+        .weight-entry-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-weight);
+        }
+
+        .weight-entry-delta {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .weight-entry-delta.neg  { color: #6bffb8; background: rgba(107,255,184,0.1); }
+        .weight-entry-delta.pos  { color: #ff6b6b; background: rgba(255,107,107,0.1); }
+        .weight-entry-delta.zero { color: var(--text-secondary); background: var(--hover-state); }
+
+        @media (max-width: 768px) {
+            .header { padding: 12px 16px; }
+            .header-title { font-size: 20px; }
+            .weight-stats-row { padding: 16px; gap: 10px; }
+            .chart-wrapper { padding: 0 16px 16px; }
+            .chart-container { height: 260px; }
+            .weight-entries-section { padding: 0 16px 32px; }
+            .stat-value { font-size: 22px; }
+        }
+
+        @media (max-width: 480px) {
+            .header-title { font-size: 18px; }
+            .nav-link { font-size: 11px; padding: 6px 12px; }
+            .stat-value { font-size: 20px; }
+            .weight-entry { flex-wrap: wrap; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1 class="header-title">Arvja Svars</h1>
+            <p class="header-subtitle">Svara dinamika laika gaitā</p>
+        </div>
+        <div class="header-nav">
+
+        </div>
+    </div>
+
+    <div class="weight-stats-row" id="weight-stats"></div>
+
+    <div class="chart-wrapper">
+        <div class="chart-header">
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background:#4ecdc4;"></div>
+                    <span>Faktiskais svars</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background:#ff6b6b;"></div>
+                    <span>Mērķis</span>
+                </div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="weightChart"></canvas>
+        </div>
+    </div>
+
+    <div class="weight-entries-section">
+        <div class="weight-entries-title">
+            Visi ieraksti
+            <span class="entry-count" id="entry-count">0</span>
+        </div>
+        <div class="weight-entries-list" id="weight-entries-list"></div>
+    </div>
+
+    <script>
+        const weightData = [
+            { date: "2026-04-14", weight: 138.2 },
+            { date: "2026-04-30", weight: 132.0 },
+            { date: "2026-06-04", weight: 128.5 },
+            { date: "2026-06-07", weight: 127.6}
+        ];
+
+        const goalStart = { date: "2026-04-14", weight: 138.2 };
+        const goalEnd   = { date: "2026-10-31", weight: 100.0 };
+
+        const sorted = [...weightData].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        const first       = sorted[0].weight;
+        const last        = sorted[sorted.length - 1].weight;
+        const min         = Math.min(...sorted.map(d => d.weight));
+        const max         = Math.max(...sorted.map(d => d.weight));
+        const totalChange = +(last - first).toFixed(1);
+        const changeClass = totalChange < 0 ? 'down' : totalChange > 0 ? 'up' : '';
+        const changeSign  = totalChange > 0 ? '+' : '';
+
+        const toGoal = +(last - goalEnd.weight).toFixed(1);
+
+        document.getElementById('weight-stats').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-label">Pašreizējais</div>
+                <div class="stat-value">${last}<span class="stat-unit"> kg</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Izmaiņas</div>
+                <div class="stat-value ${changeClass}">${changeSign}${totalChange}<span class="stat-unit"> kg</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Līdz mērķim</div>
+                <div class="stat-value ${toGoal > 0 ? 'up' : 'down'}">${toGoal > 0 ? '' : ''}${toGoal}<span class="stat-unit"> kg</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Mērķis</div>
+                <div class="stat-value" style="color:var(--accent-goal)">${goalEnd.weight}<span class="stat-unit"> kg</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Min</div>
+                <div class="stat-value">${min}<span class="stat-unit"> kg</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Max</div>
+                <div class="stat-value">${max}<span class="stat-unit"> kg</span></div>
+            </div>
+        `;
+
+        const ctx      = document.getElementById('weightChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(78, 205, 196, 0.25)');
+        gradient.addColorStop(1, 'rgba(78, 205, 196, 0.0)');
+
+        const actualPoints = sorted.map(d => ({ x: d.date, y: d.weight }));
+        const goalPoints   = [
+            { x: goalStart.date, y: goalStart.weight },
+            { x: goalEnd.date,   y: goalEnd.weight   }
+        ];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'Faktiskais svars (kg)',
+                        data: actualPoints,
+                        borderColor: '#4ecdc4',
+                        backgroundColor: gradient,
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#4ecdc4',
+                        pointBorderColor: '#0a0a0a',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        fill: true,
+                        tension: 0.35,
+                    },
+                    {
+                        label: 'Mērķis (kg)',
+                        data: goalPoints,
+                        borderColor: '#ff6b6b',
+                        backgroundColor: 'transparent',
+                        borderWidth: 1.5,
+                        borderDash: [6, 4],
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#ff6b6b',
+                        fill: false,
+                        tension: 0,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1a1a1a',
+                        borderColor: '#2a2a2a',
+                        borderWidth: 1,
+                        titleColor: '#b0b0b0',
+                        bodyColor: '#4ecdc4',
+                        titleFont: { family: 'Space Mono', size: 11 },
+                        bodyFont: { family: 'Syne', size: 16, weight: '700' },
+                        padding: 12,
+                        callbacks: {
+                            title: items => {
+                                if (!items.length) return '';
+                                return new Date(items[0].parsed.x).toLocaleDateString('lv-LV', { day: 'numeric', month: 'long', year: 'numeric' });
+                            },
+                            label: c => {
+                                const label = c.datasetIndex === 0 ? 'Svars' : 'Mērķis';
+                                return ` ${label}: ${c.parsed.y} kg`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'month',
+                            tooltipFormat: 'yyyy-MM-dd',
+                            displayFormats: { month: 'MMM yy' }
+                        },
+                        grid: { color: '#1e1e1e' },
+                        ticks: { color: '#b0b0b0', font: { family: 'Space Mono', size: 11 }, maxRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#1e1e1e' },
+                        ticks: {
+                            color: '#b0b0b0',
+                            font: { family: 'Space Mono', size: 11 },
+                            callback: v => v + ' kg'
+                        }
+                    }
+                }
+            }
+        });
+
+        const listEl   = document.getElementById('weight-entries-list');
+        const reversed = [...sorted].reverse();
+
+        document.getElementById('entry-count').textContent = sorted.length;
+
+        reversed.forEach((entry, i) => {
+            const prev = reversed[i + 1];
+            let deltaHTML = '';
+            if (prev) {
+                const delta = +(entry.weight - prev.weight).toFixed(1);
+                const cls   = delta < 0 ? 'neg' : delta > 0 ? 'pos' : 'zero';
+                const sign  = delta > 0 ? '+' : '';
+                deltaHTML = `<span class="weight-entry-delta ${cls}">${sign}${delta} kg</span>`;
+            }
+            const dateStr = new Date(entry.date).toLocaleDateString('lv-LV', { day: 'numeric', month: 'long', year: 'numeric' });
+            listEl.innerHTML += `
+                <div class="weight-entry">
+                    <span class="weight-entry-date">${dateStr}</span>
+                    <span class="weight-entry-value">${entry.weight} kg</span>
+                    ${deltaHTML}
+                </div>`;
+        });
+    </script>
+</body>
+</html>
