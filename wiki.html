@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wiki - Rasols Minecraft serveris</title>
+  <meta name="description" content="Rasols (mc.rasols.lv) wiki: kā sākt spēlēt, prasmes, misijas, ekonomika, frakcijas, Ender pūķis un komandas.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="index.html"><span>RASOLS</span></a>
+  <div class="nav-links">
+    <a href="index.html">Sākums</a>
+    <a href="wiki.html" class="active">Wiki</a>
+    <a href="https://rasols.craftingstore.net" class="shop" target="_blank" rel="noopener">Rangu veikals</a>
+  </div>
+</nav>
+
+<div class="wiki">
+  <aside class="toc">
+    <h4>Saturs</h4>
+    <a href="#sakums">Kā sākt spēlēt</a>
+    <a href="#komandas">Svarīgākās komandas</a>
+    <a href="#prasmes">Prasmes</a>
+    <a href="#kolekcijas">Kolekcijas un rīku prasmes</a>
+    <a href="#nolietojums">Nolietojums un Mending</a>
+    <a href="#misijas">Misijas</a>
+    <a href="#sacensibas">Sacensības</a>
+    <a href="#ekonomika">Ekonomika</a>
+    <a href="#komplekti">Komplekti</a>
+    <a href="#kastes">Briesmoņu kastes</a>
+    <a href="#burvestibas">Īpašās burvestības</a>
+    <a href="#uzlabojumi">Uzlabojumi</a>
+    <a href="#dzivnieki">Jājamdzīvnieki</a>
+    <a href="#frakcijas">Frakcijas un PvP</a>
+    <a href="#pukis">Ender pūķis</a>
+    <a href="#rangi">Rangi</a>
+    <a href="#cats">Čats</a>
+    <a href="#noteikumi">Noteikumi</a>
+  </aside>
+
+  <main class="content">
+    <h1>Rasols wiki</h1>
+    <p>Viss, kas jāzina par <code>mc.rasols.lv</code>. Gandrīz visam var piekļūt arī caur galveno izvēlni <code>/menu</code> - komandas nav jāiegaumē.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="sakums">Kā sākt spēlēt</h2>
+    <div class="flow">
+    <div class="flow-step">
+      <span class="flow-num">1</span>
+      <div>Atver <b>Minecraft Java Edition 26.2</b> (vai jaunāku) → Multiplayer → Add Server → <code>mc.rasols.lv</code></div>
+    </div>
+    <div class="flow-arrow"></div>
+    <div class="flow-split">
+      <div class="flow-branch">
+        <div class="flow-label">Oficiāls (premium) konts</div>
+        <div class="flow-step"><span class="flow-num">2</span><div>Vienkārši ienāc - parole nav vajadzīga.</div></div>
+      </div>
+      <div class="flow-branch">
+        <div class="flow-label">Neoficiāls konts</div>
+        <div class="flow-step"><span class="flow-num">2</span><div>Pirmajā reizē: <code>/register &lt;parole&gt; &lt;parole&gt;</code></div></div>
+        <div class="flow-arrow small"></div>
+        <div class="flow-step"><span class="flow-num">3</span><div>Turpmāk: <code>/login &lt;parole&gt;</code></div></div>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step flow-end">
+      <span class="flow-num">✓</span>
+      <div>Atver <code>/menu</code> un dodies spēlēt ar <code>/play</code>.</div>
+    </div>
+  </div>
+    <p>Ja vēlāk iegādājies oficiālu kontu, piesaisti to ar <code>/premium</code>.</p>
+    <div class="note">Jauniem spēlētājiem pirmās <b>30 minūtes</b> ir PvP aizsardzība. Ja gribi cīnīties agrāk, izslēdz to ar <code>/pvp</code>.</div>
+    <p>Mājas: <code>/sethome</code> un <code>/home</code>.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="komandas">Svarīgākās komandas</h2>
+    <table>
+      <tr><th>Komanda</th><th>Ko tā dara</th></tr>
+      <tr><td><code>/menu</code></td><td>Galvenā izvēlne - viss vienā vietā</td></tr>
+      <tr><td><code>/play</code>, <code>/spawn</code>, <code>/wild</code></td><td>Uz izdzīvošanas pasauli, uz spawn, uz nejaušu vietu</td></tr>
+      <tr><td><code>/skills</code></td><td>Tavas prasmes, kolekcijas un rīku prasmes</td></tr>
+      <tr><td><code>/missions</code></td><td>Dienas un nedēļas misijas</td></tr>
+      <tr><td><code>/competition</code></td><td>Dienas un nedēļas sacensības</td></tr>
+      <tr><td><code>/bal</code>, <code>/pay</code>, <code>/baltop</code></td><td>Monētas, maksājumi, bagātākie spēlētāji</td></tr>
+      <tr><td><code>/sell</code></td><td>Pārdot priekšmetus serverim</td></tr>
+      <tr><td><code>[item]</code>, <code>[inv]</code> čatā</td><td>Parāda priekšmetu rokā vai inventāru</td></tr>
+      <tr><td><code>/price</code></td><td>Cik serveris maksā par priekšmetu</td></tr>
+      <tr><td><code>/market</code></td><td>Spēlētāju tirgus</td></tr>
+      <tr><td><code>/orders</code></td><td>Pirkšanas pasūtījumi</td></tr>
+      <tr><td><code>/collect</code></td><td>Savākšanas kaste (nopirktie un piegādātie priekšmeti)</td></tr>
+      <tr><td><code>/kits</code></td><td>Komplekti</td></tr>
+      <tr><td><code>/kastes</code></td><td>Briesmoņu kastes un atslēgas</td></tr>
+      <tr><td><code>/store</code>, <code>/zetoni</code></td><td>Žetonu veikals - burvestības, atslēgas</td></tr>
+      <tr><td><code>/uzlabojumi</code>, <code>/mugursoma</code></td><td>Pastāvīgi uzlabojumi un tava mugursoma</td></tr>
+      <tr><td><code>/mount</code></td><td>Jājamdzīvnieki</td></tr>
+      <tr><td><code>/f</code></td><td>Frakcijas</td></tr>
+      <tr><td><code>/coinflip</code></td><td>Monētas metiens ar citu spēlētāju</td></tr>
+      <tr><td><code>/pukis</code></td><td>Kad ieradīsies nākamais Ender pūķis</td></tr>
+      <tr><td><code>/cosmetics</code>, <code>/rangi</code></td><td>Rangu kosmētika un rangi</td></tr>
+      <tr><td><code>/discord</code>, <code>/help</code></td><td>Discord saite un palīdzība</td></tr>
+    </table>
+
+    <!-- ===================================================== -->
+    <h2 id="prasmes">Prasmes</h2>
+    <p>Ir sešas parastās prasmes, katra no 1. līdz 99. līmenim. XP iegūsti, vienkārši darot attiecīgo darbu.</p>
+    <table>
+      <tr><th>Prasme</th><th>Kā trenēt</th><th>Bonuss</th></tr>
+      <tr><td>Kalnračniecība</td><td>Rok akmeni un rūdas</td><td>Dubulta ieguvuma iespēja</td></tr>
+      <tr><td>Kokcirtība</td><td>Cērt kokus</td><td>Dubulta ieguvuma iespēja</td></tr>
+      <tr><td>Makšķerēšana</td><td>Makšķerē (dārgumi dod vairāk)</td><td>Dubulta loma iespēja</td></tr>
+      <tr><td>Lauksaimniecība</td><td>Novāc nogatavojušos ražu, audzē dzīvniekus</td><td>Dubulta ieguvuma iespēja</td></tr>
+      <tr><td>Cīņa</td><td>Uzvari briesmoņus</td><td>Papildu bojājumi briesmoņiem, bruņas nolietojas lēnāk (99. līmenī - nesalaužamas)</td></tr>
+      <tr><td>Akrobātika</td><td>Pārdzīvo kritienus</td><td>Mazāki kritiena bojājumi, kūleņa iespēja</td></tr>
+    </table>
+    <p>Ik pēc 10 līmeņiem saņem <b>žetonus</b>, un par 99. līmeni - lielu bonusu.</p>
+    <h3>Pūķu kāvējs (īpašā prasme)</h3>
+    <p>Trenējama tikai, cīnoties ar Ender pūķi - XP saņem pēc tā, cik % pūķa dzīvības tu nodarīji. Katrs līmenis dod <b>+2% loka bojājumus</b>.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="kolekcijas">Kolekcijas un rīku prasmes</h2>
+    <h3>Kolekcijas</h3>
+    <p>Katram bloka vai briesmoņa veidam ir sava kolekcija ar <b>25 līmeņiem</b>. Jo vairāk konkrēto lietu iegūsti, jo labāk tev ar to sanāk:</p>
+    <ul>
+      <li>vairāk ieguvuma (dubultas rūdas, raža, laupījums);</li>
+      <li>ātrāka rakšana un ciršana (akmeņiem un baļķiem);</li>
+      <li>vairāk XP lodīšu;</li>
+      <li>pret briesmoņiem: vairāk bojājumu un mazāk saņemto bojājumu;</li>
+      <li>mazāks rīka nolietojums pret šo bloku vai briesmoni.</li>
+    </ul>
+    <p>Dažas kolekcijas atbloķē <b>īpašas receptes</b>:</p>
+    <ul>
+      <li><b>Zirnekļi 5. līmenis</b> - zirnekļu tīkls no 5 diegiem (X formā).</li>
+      <li><b>Senās atliekas 2. līmenis</b> - netherīta stienis → 4 netherīta lūžņi (zelts zūd).</li>
+    </ul>
+    <h3>Rīku prasmes</h3>
+    <p>Arī rīkiem ir līmeņi - jo vairāk tos lieto, jo ātrāk tie strādā, mazāk nolietojas, un ieroči nodara vairāk bojājumu.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="nolietojums">Nolietojums un Mending</h2>
+    <p>Iespēja, ka rīks nenolietojas:</p>
+    <table>
+      <tr><th>Avots</th><th>Maksimums</th></tr>
+      <tr><td>Rīka prasmes līmenis</td><td>40%</td></tr>
+      <tr><td>Tā bloka/briesmoņa kolekcija, ar ko strādā</td><td>40%</td></tr>
+      <tr><td>Unbreaking (pie III)</td><td>20%</td></tr>
+    </table>
+    <p>Visi trīs maksimāli = rīks <b>nemaz nenolietojas</b>.</p>
+    <h3>Mending šajā serverī</h3>
+    <ul>
+      <li>XP lodītes rīkus <b>nelabo</b> - XP vienmēr nonāk pie tevis.</li>
+      <li>Apvienojot laktā divus vienādus rīkus vai bruņas, burvestības apvienojas kā parasti, bet <b>izturība netiek atjaunota</b> - rezultātam ir sliktākā priekšmeta izturība.</li>
+      <li>Labot ar materiāliem var tikai rīkus un bruņas ar <b>Mending</b>.</li>
+      <li>Netherīta bruņas ar Mending pilnībā salabo <b>1 netherīta lūznis</b>.</li>
+    </ul>
+
+    <!-- ===================================================== -->
+    <h2 id="misijas">Misijas</h2>
+    <p>Katru dienu saņem <b>5 dienas misijas</b>, katru nedēļu - grūtākas <b>nedēļas misijas</b>. Balvas: monētas, prasmju XP un žetoni.</p>
+    <ul>
+      <li>Izpildot visas dienas misijas vairākas dienas pēc kārtas, balvas aug (līdz +50%).</li>
+      <li><code>/uzlabojumi</code> atbloķē papildu <b>bonusa misijas</b> ar lielākām balvām.</li>
+    </ul>
+
+    <!-- ===================================================== -->
+    <h2 id="sacensibas">Sacensības</h2>
+    <p>Notiek <b>dienas</b> un <b>nedēļas</b> sacensības - uzvar tas, kurš nopelna visvairāk XP noteiktajā prasmē.</p>
+    <ul>
+      <li><b>Dienas</b>: top 3 saņem monētas un žetonus.</li>
+      <li><b>Nedēļas</b>: 1. vieta - <b>VIP+ uz mēnesi</b>, 2. vieta - <b>VIP uz mēnesi</b>, plus monētas un žetoni.</li>
+    </ul>
+
+    <!-- ===================================================== -->
+    <h2 id="ekonomika">Ekonomika</h2>
+    <h3>Valūtas</h3>
+    <ul>
+      <li><b>Monētas ⛃</b> - galvenā valūta.</li>
+      <li><b>Žetoni ⛁</b> - nopelnāmi misijās, sacensībās un ar prasmju līmeņiem. Par tiem pērk burvestības, atslēgas, uzlabojumus un rangus.</li>
+    </ul>
+    <h3>Pārdošana serverim</h3>
+    <p><code>/sell</code> atver lādi - ieliec priekšmetus un aizver. Cenas: <code>/price</code>.</p>
+    <h3>Tirgus un pasūtījumi</h3>
+    <ul>
+      <li><code>/market</code> - pārdod priekšmetus citiem spēlētājiem (3% nodoklis).</li>
+      <li><code>/orders</code> - pasūti priekšmetus, citi tos piegādā.</li>
+      <li>Nopirktais un piegādātais nonāk <code>/collect</code> savākšanas kastē.</li>
+      <li><code>/coinflip</code> - 50/50 likme pret citu spēlētāju.</li>
+    </ul>
+
+    <!-- ===================================================== -->
+    <h2 id="komplekti">Komplekti</h2>
+    <p><code>/kits</code> - komplekti ar nejaušu saturu.</p>
+    <table>
+      <tr><th>Komplekts</th><th>Cik bieži</th><th>Cena</th><th>Saturs</th></tr>
+      <tr><td>Ēdiena paka</td><td>Katru stundu</td><td>100 ⛃</td><td>2 nejauši ēdieni</td></tr>
+      <tr><td>Prasmju pakas (kalnracis, kokcirtējs u.c.)</td><td>Katru stundu</td><td>3 000 ⛃</td><td>Viss nepieciešamais darbam</td></tr>
+      <tr><td>Dienas paka</td><td>Katru dienu</td><td>3 000 ⛃</td><td>Visam pa druskai</td></tr>
+      <tr><td>Nedēļas paka</td><td>Katru nedēļu</td><td>15 000 ⛃</td><td>Dārgakmeņi un atslēga</td></tr>
+    </table>
+
+    <!-- ===================================================== -->
+    <h2 id="kastes">Briesmoņu kastes</h2>
+    <p>Katram briesmoņu veidam ir sava kaste. Atslēgas iegūst:</p>
+    <ul>
+      <li><b>1% iespēja</b> no dabiski radušiem briesmoņiem (ne no spawneriem);</li>
+      <li>žetonu veikalā <code>/store</code>, komplektos un balvās.</li>
+    </ul>
+    <p>Katrā kastē ir <b>1% iespēja</b> iegūt attiecīgā briesmoņa spawneri.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="burvestibas">Īpašās burvestības</h2>
+    <p>Pērkamas par žetoniem <code>/store</code>, uzliek ar laktu.</p>
+    <table>
+      <tr><th>Burvestība</th><th>Kur</th><th>Ko dara</th></tr>
+      <tr><td>Ātrkājis I-II</td><td>Zābaki</td><td>Ātrāka skriešana un augstāki lēcieni (ne cīņas laikā)</td></tr>
+      <tr><td>Ugunsdrošs</td><td>Bruņas</td><td>Pilnīga aizsardzība pret uguni un lavu (ne kopā ar Protection)</td></tr>
+      <tr><td>Nakts redze</td><td>Ķivere</td><td>Redzi tumsā (ne kopā ar Respiration)</td></tr>
+      <tr><td>Spārni</td><td>Krūšu bruņas</td><td>Lido kā ar elytru (ne kopā ar Protection II+)</td></tr>
+      <tr><td>Urbis I-III</td><td>Cērte</td><td>Rok 2x2 / 3x3 / 4x4 laukumā (Shift - parasti)</td></tr>
+      <tr><td>Spawneru racējs</td><td>Cērte</td><td>Ļauj izrakt spawnerus (Silk Touch to nedara)</td></tr>
+      <tr><td>Kokcirtējs</td><td>Cirvis</td><td>Nocērt visu koku vienā cirtienā (Shift - parasti)</td></tr>
+      <tr><td>Zemnieka aura I-III</td><td>Kaplis</td><td>Raža 64 bloku rādiusā aug 2x / 4x / 8x ātrāk</td></tr>
+      <tr><td>Dvēseles saite</td><td>Jebkas</td><td>Priekšmets paliek pie tevis pēc nāves (burvestība pazūd)</td></tr>
+    </table>
+
+    <!-- ===================================================== -->
+    <h2 id="uzlabojumi">Pastāvīgie uzlabojumi</h2>
+    <p><code>/uzlabojumi</code> - uzlabojumi, kas paliek uz visiem laikiem.</p>
+    <ul>
+      <li><b>Sāta vēders</b> - izsalkums samazinās lēnāk.</li>
+      <li><b>Mugursoma</b> - personīga glabātuve (<code>/mugursoma</code> vai jebkura ender lāde), līdz 40 vietām.</li>
+      <li><b>Magnēts</b> - paceļ priekšmetus no tālākas distances.</li>
+      <li><b>Zivs plaušas</b> - ilgāk vari būt zem ūdens.</li>
+      <li><b>Pieredzes saglabāšana</b> - pēc nāves saglabā daļu XP.</li>
+      <li><b>Atpūta</b> - bezsaistē krāj atpūtu, kas dubulto prasmju XP.</li>
+    </ul>
+    <p>Vienreizēji atbloķējami par žetoniem: <b>papildu māja</b>, <b>Kaķa acis</b> (vienmēr redzi tumsā, <code>/kakaacis</code> ieslēdz/izslēdz) un <b>bonusa misijas</b>.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="dzivnieki">Jājamdzīvnieki</h2>
+    <p><code>/mount</code> - pastāvīgi jājamdzīvnieki, kurus atbloķē ar kopējo līmeni un monētām.</p>
+    <table>
+      <tr><th>Dzīvnieks</th><th>Īpašība</th><th>Cena</th></tr>
+      <tr><td>Zirgs</td><td>Ātrs zemes ceļabiedrs</td><td>10 000 ⛃</td></tr>
+      <tr><td>Ēzelis</td><td>Nedaudz ātrāks, nes lādi</td><td>20 000 ⛃</td></tr>
+      <tr><td>Fantoms</td><td>Lido</td><td>100 000 ⛃</td></tr>
+      <tr><td>Pūķis</td><td>Lido, ātrākais serverī - vienmēr lido uz priekšu, tu tikai stūrē</td><td>500 000 ⛃</td></tr>
+    </table>
+    <p>Lidojošie dzīvnieki aizbēg, ja tevi ievaino. Rangi atbloķē papildu izskatus.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="frakcijas">Frakcijas un PvP</h2>
+    <p><code>/f</code> - izveido frakciju vai pievienojies draugiem.</p>
+    <ul>
+      <li>Katrs biedrs dod <b>16 spēka</b> - 1 spēks = 1 chunk zemes. Spēks nāvē nezūd.</li>
+            <li>Aizņemtā zeme ir <b>aizsargāta</b> (izņemot reidu laikā).</li>
+      <li><b>PvP ir ieslēgts</b> visur, izņemot spawn un drošās zonas.</li>
+    </ul>
+    <h3>Reidi</h3>
+    <ul>
+      <li>Frakcijas virsnieks vai līderis raksta <code>/f raid</code>, stāvot citas frakcijas zemē. Reidu var sākt <b>no 16:00 līdz 20:00</b>, vienu frakciju - <b>ne biežāk kā reizi dienā</b>. Sabiedrotos reidot nevar.</li>
+      <li>Reids ilgst līdz <b>1 stundai</b>.</li>
+      <li>Reida laikā frakcijas zemi un tai blakus esošos chunkus var spridzināt ar TNT un krīperiem. <b>Obsidiāns</b> saplīst pēc 2 sprādzieniem tuvumā.</li>
+      <li>Reidotajā zemē nevar būvēt vai rakt - tikai spridzināt.</li>
+      <li>Saspridzinātie bloki neko neizmet, tikai lāžu saturs izbirst - to var salaupīt un aizbēgt.</li>
+      <li>Reida zonā <b>nedarbojas redstone</b>.</li>
+      <li>Pēc reida <b>bāze tiek pilnībā atjaunota</b>. Saspridzinātās lādes atgriežas <b>tukšas</b>.</li>
+          </ul>
+
+    <!-- ===================================================== -->
+    <h2 id="pukis">Ender pūķis</h2>
+    <p>Ender pūķis ierodas <b>katru dienu 17:00 un 20:00</b>. Kad atlicis, cik ilgi: <code>/pukis</code>.</p>
+    <ul>
+      <li>3 pūķu veidi: <b>Pelnu</b>, <b>Liesmu</b> un <b>Mūžības pūķis</b> - jo stiprāks, jo lielāks laupījums.</li>
+            <li>Pēc uzvaras pa visu salu izbirst laupījums, un uz portāla staba parādās <b>pūķa dārgums</b>.</li>
+      <li>Ja pūķis netiek uzvarēts stundas laikā, tas aizlido.</li>
+      <li>Starp cīņām End sala ir PvP zona.</li>
+    </ul>
+    <h3>Pūķa dārgumi</h3>
+    <table>
+      <tr><th>Dārgums</th><th>Ko dara</th></tr>
+      <tr><td>Pūķa dusmas (zobens)</td><td>50 bojājumi briesmoņiem</td></tr>
+      <tr><td>Pūķa acs (loks)</td><td>Bultas sprāgst kā TNT</td></tr>
+      <tr><td>Pūķa cērte</td><td>Akmeni izrok uzreiz, neko citu nevar izrakt</td></tr>
+      <tr><td>Pūķa kaplis</td><td>Novāktā raža automātiski tiek iesēta no inventāra</td></tr>
+      <tr><td>Pūķa ola</td><td>Pastāv tikai viena. Tur savu chunk ielādētu</td></tr>
+    </table>
+    <p>Pūķa dārgumus nevar apburt.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="rangi">Rangi</h2>
+    <p>Rangi ir <b>tikai kosmētiski</b> - prefikss, vārda krāsas, daļiņu takas, mājdzīvnieki un jājamdzīvnieku izskati.</p>
+    <table>
+      <tr><th>Rangs</th><th>Cena</th><th>Žetonos</th></tr>
+      <tr><td>VIP</td><td>3 € / mēnesī</td><td>300 ⛁</td></tr>
+      <tr><td>VIP+</td><td>5 € / mēnesī</td><td>500 ⛁</td></tr>
+      <tr><td>MVP</td><td>10 € / mēnesī</td><td>800 ⛁</td></tr>
+      <tr><td>MVP+</td><td>20 € / mēnesī</td><td>1200 ⛁</td></tr>
+    </table>
+    <p>Rangus var nopirkt <a href="https://rasols.craftingstore.net" target="_blank" rel="noopener">rangu veikalā</a>, spēlē par žetoniem (<code>/rangi</code>) vai laimēt nedēļas sacensībās.</p>
+
+    <!-- ===================================================== -->
+    <h2 id="cats">Čats</h2>
+    <ul>
+      <li><code>[item]</code> - parāda priekšmetu, ko turi rokā.</li>
+      <li><code>[inv]</code> - parāda visu tavu inventāru.</li>
+      <li>Smaidiņi kā <code>&lt;3</code>, <code>:)</code> un <code>:fire:</code> pārvēršas simbolos.</li>
+      <li>Frakcijas čats: <code>/f chat</code>.</li>
+    </ul>
+
+    <!-- ===================================================== -->
+    <h2 id="noteikumi">Noteikumi</h2>
+    <ul>
+      <li>Esi pieklājīgs - bez apvainojumiem, draudiem un diskriminācijas.</li>
+      <li>Aizliegti cheati, X-ray, automātiskie klikšķinātāji un citas negodīgas modifikācijas.</li>
+      <li>Aizliegta citu serveru reklāma.</li>
+      <li>Kļūdu izmantošana ir aizliegta - ja atrodi kļūdu, ziņo komandai.</li>
+      <li>Neizmanto citu kontus un nedalies ar savu paroli.</li>
+    </ul>
+    <p>Jautājumi? Raksti mūsu <a href="https://discord.gg/yVVeP8Z22X" target="_blank" rel="noopener">Discord</a> serverī vai spēlē <code>/helpop</code>.</p>
+  </main>
+</div>
+
+<footer>
+  mc.rasols.lv · <a href="index.html">Sākums</a> · <a href="https://rasols.craftingstore.net" target="_blank" rel="noopener">Rangu veikals</a> · <a href="https://discord.gg/yVVeP8Z22X" target="_blank" rel="noopener">Discord</a><br>
+  Nav saistīts ar Mojang vai Microsoft.
+</footer>
+</body>
+</html>
