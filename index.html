@@ -1,94 +1,10 @@
-<!doctype html>
-<html lang="lv">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rasols - Latvijas Minecraft serveris</title>
-  <meta name="description" content="mc.rasols.lv - latviešu Minecraft serveris ar prasmēm, misijām, frakcijām, tirgu un ikdienas Ender pūķa cīņām.">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<nav class="nav">
-  <a class="brand" href="index.html"><span>RASOLS</span></a>
-  <div class="nav-links">
-    <a href="index.html" class="active">Sākums</a>
-    <a href="wiki.html">Wiki</a>
-    <a href="https://rasols.craftingstore.net" class="shop" target="_blank" rel="noopener">Rangu veikals</a>
-  </div>
-</nav>
-
-<header class="hero">
-  <h1>Laipni lūgts <span>Rasolā!</span></h1>
-  <p class="lead">Attīsti prasmes, cīnies ar bosiem, veido labāko frakciju!</p>
-
-  <div class="ip-box">
-    <span id="ip">mc.rasols.lv</span>
-    <button id="copy" type="button">Kopēt</button>
-  </div>
-  <div class="ip-hint">Minecraft Java Edition 26.2 · oficiālie un neoficiālie konti</div>
-
-  <div class="cta">
-    <a class="btn primary" href="wiki.html#sakums">Kā sākt spēlēt</a>
-    <a class="btn" href="wiki.html">Lasīt wiki</a>
-    <a class="btn" href="https://discord.gg/yVVeP8Z22X" target="_blank" rel="noopener">Discord</a>
-  </div>
-</header>
-
-<section class="wrap">
-  <h2 class="section-title">Kas ir Rasols?</h2>
-  <p class="section-sub">Izdzīvošanas serveris ar RuneScape stila progresu - viss serverī ir latviešu valodā.</p>
-  <div class="grid">
-    <div class="card"><h3>Prasmes un kolekcijas</h3><p>Sešas prasmes līdz 99. līmenim un kolekcijas, kas padara tevi labāku tajā, ko dari visvairāk.</p></div>
-    <div class="card"><h3>Misijas un sacensības</h3><p>Dienas un nedēļas misijas un sacensības ar monētu, žetonu un rangu balvām.</p></div>
-    <div class="card"><h3>Spēlētāju ekonomika</h3><p>Tirgus, pirkšanas pasūtījumi, pārdošana serverim un otrā valūta - žetoni.</p></div>
-    <div class="card"><h3>Frakcijas un reidi</h3><p>Aizņem zemi ar draugiem un vakaros reido citu bāzes.</p></div>
-    <div class="card"><h3>Ender pūķis katru dienu</h3><p>17:00 un 20:00 Endā ierodas pūķis ar retiem dārgumiem.</p></div>
-    <div class="card"><h3>Bez pay-to-win</h3><p>Rangi ir tikai kosmētiski - visu pārējo nopelni spēlējot.</p></div>
-  </div>
-</section>
-
-<section class="wrap" style="padding-top:0">
-  <h2 class="section-title">Kā pievienoties</h2>
-  <p class="section-sub">Sīkāk viss aprakstīts <a href="wiki.html">wiki</a>.</p>
-  <div class="flow">
-    <div class="flow-step">
-      <span class="flow-num">1</span>
-      <div>Atver <b>Minecraft Java Edition 26.2</b> (vai jaunāku) → Multiplayer → Add Server → <code>mc.rasols.lv</code></div>
-    </div>
-    <div class="flow-arrow"></div>
-    <div class="flow-split">
-      <div class="flow-branch">
-        <div class="flow-label">Oficiāls (premium) konts</div>
-        <div class="flow-step"><span class="flow-num">2</span><div>Vienkārši ienāc - parole nav vajadzīga.</div></div>
-      </div>
-      <div class="flow-branch">
-        <div class="flow-label">Neoficiāls konts</div>
-        <div class="flow-step"><span class="flow-num">2</span><div>Pirmajā reizē: <code>/register &lt;parole&gt; &lt;parole&gt;</code></div></div>
-        <div class="flow-arrow small"></div>
-        <div class="flow-step"><span class="flow-num">3</span><div>Turpmāk: <code>/login &lt;parole&gt;</code></div></div>
-      </div>
-    </div>
-    <div class="flow-arrow"></div>
-    <div class="flow-step flow-end">
-      <span class="flow-num">✓</span>
-      <div>Atver <code>/menu</code> un dodies spēlēt ar <code>/play</code>.</div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  mc.rasols.lv · <a href="wiki.html">Wiki</a> · <a href="https://rasols.craftingstore.net" target="_blank" rel="noopener">Rangu veikals</a> · <a href="https://discord.gg/yVVeP8Z22X" target="_blank" rel="noopener">Discord</a><br>
-  Nav saistīts ar Mojang vai Microsoft.
-</footer>
-
-<script>
-  document.getElementById('copy').addEventListener('click', function () {
-    var b = this, ip = document.getElementById('ip').textContent;
-    function done() { b.textContent = 'Nokopēts!'; setTimeout(function () { b.textContent = 'Kopēt'; }, 1500); }
-    if (navigator.clipboard) navigator.clipboard.writeText(ip).then(done, done);
-    else { var t = document.createElement('textarea'); t.value = ip; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); done(); }
-  });
-</script>
-</body>
-</html>
+<style>
+	body{
+		background-color: black;	
+	}
+</style>
+<div style="margin-top: calc(50vh - 450px);">
+	<center>
+		<img src="deni.png">
+	</center>
+<div>
